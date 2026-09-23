@@ -25,7 +25,7 @@ All requests send `Authorization: Bearer $SWAG_TOKEN` and `Accept: application/j
 | Action | Request | Success |
 |---|---|---|
 | Create | `POST /api/pages` with `{"title", "body_markdown"}` | 201, `data.url` |
-| List (most recently updated first, 20/page) | `GET /api/pages?page=N` | 200, `data[]`, `meta.total` |
+| List (20/page) | `GET /api/pages?sort=updated\|created\|title&page=N` (default `updated`, most recent first; `title` is A–Z) | 200, `data[]`, `meta.total` |
 | Read | `GET /api/pages/{id}` | 200 |
 | Update (send only changed fields) | `PATCH /api/pages/{id}` | 200 |
 | Delete | `DELETE /api/pages/{id}` | 204 |

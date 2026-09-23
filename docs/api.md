@@ -52,9 +52,17 @@ flattened. There's no image upload, so images need a public URL.
 
 ### List pages
 
-`GET /api/pages?page=1`
+`GET /api/pages?sort=updated&page=1`
 
-Returns your pages, most recently updated first, 20 per page.
+Returns your pages, 20 per page.
+
+| `sort` | Order |
+|---|---|
+| `updated` (default) | Most recently updated first |
+| `created` | Newest created first |
+| `title` | Title A–Z, ignoring case |
+
+An unknown `sort` falls back to `updated`. The `links` URLs keep your `sort` value.
 
 ```json
 {

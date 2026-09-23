@@ -81,6 +81,30 @@ it('lists the most recently updated page first', function () {
     $this->getJson('/api/pages')->assertJsonPath('data.0.title', 'Old but just edited');
 });
 
+it('sorts by title A to Z', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->create(['title' => 'Zebra fencing', 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'apple trees', 'updated_at' => now()->subDay()]);
+
+    $this->getJson('/api/pages?sort=title')->assertJsonPath('data.0.title', 'apple trees');
+});
+
+it('sorts by newest created', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->create(['title' => 'Old but just edited', 'created_at' => now()->subMonth(), 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'New but untouched', 'created_at' => now()->subDay(), 'updated_at' => now()->subDay()]);
+
+    $this->getJson('/api/pages?sort=created')->assertJsonPath('data.0.title', 'New but untouched');
+});
+
+it('keeps the sort in pagination links and ignores a malformed sort', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->count(21)->create();
+
+    expect($this->getJson('/api/pages?sort=title')->json('links.next'))->toContain('sort=title');
+    $this->getJson('/api/pages?sort[]=title')->assertOk();
+});
+
 it('shows one of the caller\'s pages', function () {
     $user = Sanctum::actingAs(User::factory()->create());
     $page = Page::factory()->for($user)->create();
