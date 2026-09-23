@@ -3,10 +3,12 @@ title: Home
 nav_order: 1
 ---
 
-# noteBoard
+# Swag
 
-noteBoard is a small private website for Markdown pages. You chat with an AI assistant,
-it posts pages to your board through a token-authenticated REST API, and you read them
+*A swag is the Aussie bedroll you carry everything in. This one carries your notes.*
+
+Swag is a small private website for Markdown pages. You chat with an AI assistant
+("add this to the swag mate"), it posts pages through a token-authenticated REST API, and you read them
 later from any browser, including your phone when you're away from home.
 
 ## What it does
@@ -24,8 +26,8 @@ later from any browser, including your phone when you're away from home.
 
 | Guide | For |
 |---|---|
-| [Getting started](getting-started.md) | Running noteBoard locally in Docker, running tests |
-| [Using noteBoard](user-guide.md) | Logging in, reading pages, API tokens, managing users |
+| [Getting started](getting-started.md) | Running Swag locally in Docker, running tests |
+| [Using Swag](user-guide.md) | Logging in, reading pages, API tokens, managing users |
 | [REST API](api.md) | Endpoint reference for AI clients and scripts |
 | [AI assistants](ai-assistants.md) | Connecting any AI agent or script to post pages |
 | [Architecture](architecture.md) | How the code is laid out and the security model |

@@ -24,7 +24,7 @@ nav_order: 7
 
 ```
 app/
-  Console/Commands/CreateAdmin.php      noteboard:create-admin
+  Console/Commands/CreateAdmin.php      swag:create-admin
   Http/Controllers/
     Auth/LoginController.php            login, logout
     AccountController.php               name and email
@@ -44,7 +44,7 @@ app/
 routes/web.php, routes/api.php
 resources/views/                        Blade templates
 deploy/                                 cPanel build script, index.php, .htaccess
-skills/noteboard/                       portable Agent Skill (any agent)
+skills/swag/                       portable Agent Skill (any agent)
 ```
 
 ## Data model

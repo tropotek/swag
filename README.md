@@ -1,7 +1,9 @@
-# noteBoard
+# Swag
 
-A small private website for Markdown pages. You chat with an AI assistant, it posts pages to
-your board through a token-authenticated REST API, and you read them later from any browser,
+*A swag is the Aussie bedroll you carry everything in. This one carries your notes.*
+
+A small private website for Markdown pages. You chat with an AI assistant ("add this to
+the swag mate"), it posts pages through a token-authenticated REST API, and you read them later from any browser,
 including your phone when you're away from home.
 
 - **AI-friendly API.** Per-user Sanctum tokens with full CRUD on `/api/pages`. Errors are
@@ -23,7 +25,7 @@ touch database/database.sqlite
 docker compose run --rm app php artisan key:generate
 docker compose run --rm app php artisan migrate
 docker compose up -d app
-docker compose exec app php artisan noteboard:create-admin
+docker compose exec app php artisan swag:create-admin
 ```
 
 Then open <http://localhost:8080>.
@@ -42,7 +44,7 @@ curl -X POST http://localhost:8080/api/pages \
 | | |
 |---|---|
 | [Getting started](docs/getting-started.md) | Local development, containers, tests |
-| [Using noteBoard](docs/user-guide.md) | Pages, API tokens, accounts, managing users |
+| [Using Swag](docs/user-guide.md) | Pages, API tokens, accounts, managing users |
 | [REST API](docs/api.md) | Endpoint reference |
 | [AI assistants](docs/ai-assistants.md) | Connecting any AI agent, with a portable skill |
 | [Architecture](docs/architecture.md) | Code map, data model, security model |

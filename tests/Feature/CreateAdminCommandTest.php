@@ -4,7 +4,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 it('creates an admin with a lowercased email', function () {
-    $this->artisan('noteboard:create-admin')
+    $this->artisan('swag:create-admin')
         ->expectsQuestion('Name', 'Ada')
         ->expectsQuestion('Email', '  Ada@Example.COM ')
         ->expectsQuestion('Password', 'correct-horse-battery')
@@ -20,7 +20,7 @@ it('creates an admin with a lowercased email', function () {
 it('refuses when an admin already exists', function () {
     User::factory()->admin()->create();
 
-    $this->artisan('noteboard:create-admin')->assertFailed();
+    $this->artisan('swag:create-admin')->assertFailed();
 
     expect(User::count())->toBe(1);
 });
@@ -28,7 +28,7 @@ it('refuses when an admin already exists', function () {
 it('creates another admin with --force', function () {
     User::factory()->admin()->create();
 
-    $this->artisan('noteboard:create-admin', ['--force' => true])
+    $this->artisan('swag:create-admin', ['--force' => true])
         ->expectsQuestion('Name', 'Bob')
         ->expectsQuestion('Email', 'bob@example.com')
         ->expectsQuestion('Password', 'correct-horse-battery')
@@ -38,7 +38,7 @@ it('creates another admin with --force', function () {
 });
 
 it('rejects an invalid email and a short password', function () {
-    $this->artisan('noteboard:create-admin')
+    $this->artisan('swag:create-admin')
         ->expectsQuestion('Name', 'Ada')
         ->expectsQuestion('Email', 'not-an-email')
         ->expectsQuestion('Password', 'short')
@@ -50,7 +50,7 @@ it('rejects an invalid email and a short password', function () {
 it('rejects an email that differs only in case from an existing user', function () {
     User::factory()->create(['email' => 'ada@example.com']);
 
-    $this->artisan('noteboard:create-admin')
+    $this->artisan('swag:create-admin')
         ->expectsQuestion('Name', 'Ada')
         ->expectsQuestion('Email', 'ADA@example.com')
         ->expectsQuestion('Password', 'correct-horse-battery')

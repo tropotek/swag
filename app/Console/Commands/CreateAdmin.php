@@ -10,7 +10,7 @@ use Illuminate\Validation\Rules\Password;
 
 class CreateAdmin extends Command
 {
-    protected $signature = 'noteboard:create-admin {--force : Create another admin even if one exists}';
+    protected $signature = 'swag:create-admin {--force : Create another admin even if one exists}';
 
     protected $description = 'Create an administrator account';
 

@@ -71,8 +71,8 @@ Returns your pages, newest first, 20 per page.
 ```bash
 jq -n --arg title "Hello" --arg body "# Hello\n\nFrom a script." \
   '{title: $title, body_markdown: $body}' |
-curl -sS -X POST "$NOTEBOARD_URL/api/pages" \
-  -H "Authorization: Bearer $NOTEBOARD_TOKEN" \
+curl -sS -X POST "$SWAG_URL/api/pages" \
+  -H "Authorization: Bearer $SWAG_TOKEN" \
   -H "Accept: application/json" -H "Content-Type: application/json" \
   --data-binary @-
 ```
@@ -91,8 +91,8 @@ of quotes and newlines that break hand-written JSON.
 Send only the fields you're changing. A field you send can't be empty.
 
 ```bash
-curl -sS -X PATCH "$NOTEBOARD_URL/api/pages/12" \
-  -H "Authorization: Bearer $NOTEBOARD_TOKEN" \
+curl -sS -X PATCH "$SWAG_URL/api/pages/12" \
+  -H "Authorization: Bearer $SWAG_TOKEN" \
   -H "Accept: application/json" -H "Content-Type: application/json" \
   -d '{"title": "A better title"}'
 ```

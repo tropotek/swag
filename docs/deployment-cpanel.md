@@ -3,14 +3,14 @@ title: Deploying to cPanel
 nav_order: 6
 ---
 
-# Deploying noteBoard to cPanel
+# Deploying Swag to cPanel
 
 This guide is for cPanel shared hosting where the web root is fixed to `public_html`.
 The build script produces a bundle that splits the app so that only the front
 controller and static assets are web-served.
 
 The bundle unpacks into two sibling folders in your cPanel home directory:
-`~/noteboard-app/` (code, database, never web-served) and `~/public_html/`
+`~/swag-app/` (code, database, never web-served) and `~/public_html/`
 (web root).
 
 ## Before the first deploy
@@ -28,11 +28,11 @@ Back up anything already in `public_html/`, because extracting the bundle overwr
 ## Build (on the dev machine)
 
     git status              # must be clean
-    deploy/build-cpanel.sh  # → dist/noteboard-cpanel.tar.gz
+    deploy/build-cpanel.sh  # → dist/swag-cpanel.tar.gz
 
 ## First deploy
 
-1. Upload `noteboard-cpanel.tar.gz` to your home directory (File Manager) and extract it there.
+1. Upload `swag-cpanel.tar.gz` to your home directory (File Manager) and extract it there.
    File Manager hides dotfiles by default. Turn on Settings → "Show Hidden Files" to see
    `.env` and `public_html/.htaccess`.
 2. In MultiPHP Manager, select the domain and set PHP 8.5 again, even if it already shows 8.5.
@@ -40,14 +40,14 @@ Back up anything already in `public_html/`, because extracting the bundle overwr
    `public_html/.htaccess`, and extracting the bundle just replaced that file.
 3. In Terminal:
 
-       cd ~/noteboard-app
+       cd ~/swag-app
        cp .env.example .env
 
-4. Edit `~/noteboard-app/.env`. Laravel reads this file itself at boot, and
+4. Edit `~/swag-app/.env`. Laravel reads this file itself at boot, and
    `config:cache` in step 5 then bakes the values into `bootstrap/cache/config.php`.
    Re-run `config:cache` after every `.env` edit.
 
-       APP_NAME=noteBoard
+       APP_NAME=Swag
        APP_ENV=production
        APP_DEBUG=false
        APP_URL=https://your-domain.example
@@ -62,7 +62,7 @@ Back up anything already in `public_html/`, because extracting the bundle overwr
        touch database/database.sqlite
        php artisan key:generate --force
        php artisan migrate --force
-       php artisan noteboard:create-admin
+       php artisan swag:create-admin
        php artisan config:cache && php artisan route:cache && php artisan view:cache
 
 ## Updating
@@ -72,7 +72,7 @@ Back up anything already in `public_html/`, because extracting the bundle overwr
 2. Re-set PHP 8.5 in MultiPHP Manager (the extract replaced `public_html/.htaccess` again).
 3. In Terminal:
 
-       cd ~/noteboard-app
+       cd ~/swag-app
        php artisan migrate --force
        php artisan config:cache && php artisan route:cache && php artisan view:cache
 
@@ -91,7 +91,7 @@ Back up anything already in `public_html/`, because extracting the bundle overwr
 - 500 on every page right after an extract, with nothing in the log or a Composer
   "platform check" PHP-version error: the site dropped to the server's default PHP.
   Re-set 8.5 in MultiPHP Manager.
-- 500 on every page: check `~/noteboard-app/storage/logs/laravel.log`.
+- 500 on every page: check `~/swag-app/storage/logs/laravel.log`.
   "Vite manifest not found" means `public_html/build/` is missing or `public_html/index.php` isn't the bundle's.
 - "attempt to write a readonly database": the `database/` folder (not just the file) must be writable.
-  Run `chmod 755 ~/noteboard-app/database` and `chmod 644 ~/noteboard-app/database/database.sqlite`.
+  Run `chmod 755 ~/swag-app/database` and `chmod 644 ~/swag-app/database/database.sqlite`.

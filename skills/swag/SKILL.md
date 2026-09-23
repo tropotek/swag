@@ -1,11 +1,11 @@
 ---
-name: noteboard
-description: Use when the user asks to save, post, publish, send or "put on my noteBoard" something to read later (e.g. on their phone), or to list, find, update or delete pages on their noteBoard site.
+name: swag
+description: Use when the user says "add this to the swag", "chuck it in the swag", "put that in my swag" or similar, asks what's in the swag, or otherwise wants something saved as a page to read later (e.g. on their phone), or wants Swag pages listed, found, updated or deleted.
 ---
 
-# noteBoard
+# Swag
 
-noteBoard is the user's private site of Markdown pages. You post pages through its REST API, and the user reads them later in a browser.
+Swag is the user's private site of Markdown pages, the things they carry with them. "Add this to the swag" means post it as a page. You post pages through its REST API, and the user reads them later in a browser.
 
 ## Configuration
 
@@ -13,14 +13,14 @@ Two environment variables:
 
 | Variable | Example |
 |---|---|
-| `NOTEBOARD_URL` | `https://notes.example.com` (no trailing slash) |
-| `NOTEBOARD_TOKEN` | the user's API token, from the site's **API tokens** page |
+| `SWAG_URL` | `https://notes.example.com` (no trailing slash) |
+| `SWAG_TOKEN` | the user's API token, from the site's **API tokens** page |
 
-Check both with `[ -n "$NOTEBOARD_URL" ] && [ -n "$NOTEBOARD_TOKEN" ] && echo set`. If either is missing, stop and ask the user to set it. If the token is set in a shell profile, it must be single-quoted, because tokens contain `|`. Never print the token, write it into files, or put it literally in a command. Always reference `$NOTEBOARD_TOKEN`.
+Check both with `[ -n "$SWAG_URL" ] && [ -n "$SWAG_TOKEN" ] && echo set`. If either is missing, stop and ask the user to set it. If the token is set in a shell profile, it must be single-quoted, because tokens contain `|`. Never print the token, write it into files, or put it literally in a command. Always reference `$SWAG_TOKEN`.
 
 ## API
 
-All requests send `Authorization: Bearer $NOTEBOARD_TOKEN` and `Accept: application/json`.
+All requests send `Authorization: Bearer $SWAG_TOKEN` and `Accept: application/json`.
 
 | Action | Request | Success |
 |---|---|---|
@@ -43,8 +43,8 @@ Markdown content here. Tables, lists and fenced code all render.
 MD
 jq -n --arg title "Short descriptive title" --rawfile body "$body" \
   '{title: $title, body_markdown: $body}' |
-curl -sS -X POST "$NOTEBOARD_URL/api/pages" \
-  -H "Authorization: Bearer $NOTEBOARD_TOKEN" \
+curl -sS -X POST "$SWAG_URL/api/pages" \
+  -H "Authorization: Bearer $SWAG_TOKEN" \
   -H "Accept: application/json" -H "Content-Type: application/json" \
   --data-binary @- | jq '{id: .data.id, url: .data.url, errors: .errors}'
 rm -f "$body"

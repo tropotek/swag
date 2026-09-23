@@ -5,11 +5,11 @@ nav_order: 5
 
 # Connecting an AI assistant
 
-noteBoard isn't tied to any one assistant. Anything that can make an HTTP request with a
+Swag isn't tied to any one assistant. Anything that can make an HTTP request with a
 Bearer token can post pages: coding agents, agent frameworks, scripts, or a custom GPT.
 All it needs is the [REST API](api.md) and a token.
 
-To make this easy, the repository ships a portable **skill**, `skills/noteboard/SKILL.md`.
+To make this easy, the repository ships a portable **skill**, `skills/swag/SKILL.md`.
 It's a plain Markdown file in the open Agent Skills format that tells an agent how to post,
 find, update and (after asking) delete pages. Its commands use only `curl` and `jq`.
 
@@ -21,14 +21,14 @@ find, update and (after asking) delete pages. Its commands use only `curl` and `
 
    | Variable | Value |
    |---|---|
-   | `NOTEBOARD_URL` | Your site, e.g. `https://notes.example.com` (no trailing slash) |
-   | `NOTEBOARD_TOKEN` | The token |
+   | `SWAG_URL` | Your site, e.g. `https://notes.example.com` (no trailing slash) |
+   | `SWAG_TOKEN` | The token |
 
    If you set them in a shell profile, **single-quote the token**, because tokens contain `|`:
 
    ```bash
-   export NOTEBOARD_URL='https://notes.example.com'
-   export NOTEBOARD_TOKEN='1|your-token'
+   export SWAG_URL='https://notes.example.com'
+   export SWAG_TOKEN='1|your-token'
    ```
 
 3. **`curl` and `jq`** on the machine the agent runs on. You only need these for the skill;
@@ -37,12 +37,12 @@ find, update and (after asking) delete pages. Its commands use only `curl` and `
 ## Installing the skill
 
 Run these from the repository root. A symlink means `git pull` also updates the skill. If you
-don't have the repository, copy the `skills/noteboard` folder instead.
+don't have the repository, copy the `skills/swag` folder instead.
 
 | Agent | Install |
 |---|---|
-| Agents that read `~/.agents/skills/` (e.g. Codex, Copilot CLI, Gemini CLI) | `mkdir -p ~/.agents/skills && ln -s "$PWD/skills/noteboard" ~/.agents/skills/noteboard` |
-| Claude Code | `ln -s "$PWD/skills/noteboard" ~/.claude/skills/noteboard` |
+| Agents that read `~/.agents/skills/` (e.g. Codex, Copilot CLI, Gemini CLI) | `mkdir -p ~/.agents/skills && ln -s "$PWD/skills/swag" ~/.agents/skills/swag` |
+| Claude Code | `ln -s "$PWD/skills/swag" ~/.claude/skills/swag` |
 | Any other agent that can run shell commands | Paste the contents of `SKILL.md` into its instructions or rules file |
 
 Then provide the environment variables in whatever way the agent supports: a shell profile,
@@ -51,7 +51,7 @@ the agent's own settings file, or its secrets store. Start a new session afterwa
 ### Example: Claude Code
 
 ```bash
-ln -s "$PWD/skills/noteboard" ~/.claude/skills/noteboard
+ln -s "$PWD/skills/swag" ~/.claude/skills/swag
 ```
 
 Add the variables to `~/.claude/settings.json`, which is per-user and not part of any repository:
@@ -59,8 +59,8 @@ Add the variables to `~/.claude/settings.json`, which is per-user and not part o
 ```json
 {
   "env": {
-    "NOTEBOARD_URL": "https://notes.example.com",
-    "NOTEBOARD_TOKEN": "1|your-token"
+    "SWAG_URL": "https://notes.example.com",
+    "SWAG_TOKEN": "1|your-token"
   }
 }
 ```
@@ -72,10 +72,10 @@ put the two variables where the agent reads its environment.
 
 Ask in plain words:
 
-- "Put a summary of this conversation on my noteBoard."
-- "Save these steps to noteBoard as 'Router reset'."
-- "Update my noteBoard page about the tap repair: add a step for the washer."
-- "What's on my noteBoard from this week?"
+- "Add this to the swag mate."
+- "Chuck these steps in the swag as 'Router reset'."
+- "Update the tap repair page in the swag: add a step for the washer."
+- "What's in the swag from this week?"
 
 The agent replies with the page's URL. Before deleting a page or replacing its whole body,
 it asks you first.

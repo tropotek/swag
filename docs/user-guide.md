@@ -1,9 +1,9 @@
 ---
-title: Using noteBoard
+title: Using Swag
 nav_order: 3
 ---
 
-# Using noteBoard
+# Using Swag
 
 ## Logging in
 
@@ -21,7 +21,7 @@ must be different from the temporary one and at least 8 characters.
 
 ### Forgotten password
 
-noteBoard doesn't send email. Ask an administrator to set a new temporary password for you.
+Swag doesn't send email. Ask an administrator to set a new temporary password for you.
 
 ## Pages
 
@@ -71,5 +71,5 @@ Administrators see a **Users** link.
 You can't delete your own account, so there's always at least one administrator.
 
 The very first administrator is created on the server with
-`php artisan noteboard:create-admin` (see [Getting started](getting-started.md) or
+`php artisan swag:create-admin` (see [Getting started](getting-started.md) or
 [Deploying to cPanel](deployment-cpanel.md)).

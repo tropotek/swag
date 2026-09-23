@@ -15,7 +15,7 @@ Development runs entirely in Docker. You don't need PHP, Composer or Node on the
 ## First run
 
 ```bash
-git clone <repo-url> noteBoard && cd noteBoard
+git clone <repo-url> Swag && cd Swag
 cp .env.example .env
 
 docker compose build app
@@ -27,18 +27,18 @@ docker compose run --rm app php artisan key:generate
 docker compose run --rm app php artisan migrate
 
 docker compose up -d app
-docker compose exec app php artisan noteboard:create-admin
+docker compose exec app php artisan swag:create-admin
 ```
 
 Open <http://localhost:8080> and log in with the admin account you just created.
 
-`noteboard:create-admin` refuses to run once an admin exists. Pass `--force` to add another.
+`swag:create-admin` refuses to run once an admin exists. Pass `--force` to add another.
 
 ## The containers
 
 | Service | Image | Purpose |
 |---|---|---|
-| `app` | `noteboard-dev` (built from `Dockerfile`, FrankenPHP on PHP 8.5) | Serves the site on port 80 inside the container. Runs `php`, `composer` and `artisan`. |
+| `app` | `swag-dev` (built from `Dockerfile`, FrankenPHP on PHP 8.5) | Serves the site on port 80 inside the container. Runs `php`, `composer` and `artisan`. |
 | `node` | `node:22-alpine` (profile `tools`) | Runs `npm` to build assets. Started on demand with `docker compose run`. |
 
 The project directory is bind-mounted at `/app`, so code changes are live without a rebuild.
@@ -83,7 +83,7 @@ touches your dev data. Tests live in `tests/Feature/`:
 | `AuthTest.php` | Login, logout, throttling, no registration routes |
 | `PasswordChangeTest.php` | Forced password change |
 | `AccountTest.php` | Name and email updates |
-| `CreateAdminCommandTest.php` | The `noteboard:create-admin` command |
+| `CreateAdminCommandTest.php` | The `swag:create-admin` command |
 | `PageModelTest.php` | Markdown rendering and sanitising |
 | `PagePolicyTest.php` | Owner-only access |
 | `WebPagesTest.php` | Feed, page view, edit, delete |

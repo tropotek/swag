@@ -5,7 +5,7 @@ services:
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
-    image: noteboard-dev
+    image: swag-dev
     ports:
       - "${APP_PORT:-8080}:80"
     volumes:

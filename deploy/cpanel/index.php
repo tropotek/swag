@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-$appPath = dirname(__DIR__).'/noteboard-app';
+$appPath = dirname(__DIR__).'/swag-app';
 
 if (file_exists($maintenance = $appPath.'/storage/framework/maintenance.php')) {
     require $maintenance;
