@@ -1,5 +1,9 @@
 # Swag 🗞️
 
+[![Docs](https://img.shields.io/badge/docs-tropotek.github.io%2Fswag-2f6feb)](https://tropotek.github.io/swag/)
+
+**[Read the documentation →](https://tropotek.github.io/swag/)**
+
 *A swag is the Aussie bedroll you carry everything in. This one carries your notes.*
 
 A small private website for Markdown pages. You chat with an AI assistant ("add this to
@@ -41,6 +45,8 @@ curl -X POST http://localhost:8080/api/pages \
 
 ## Documentation
 
+Full docs: **<https://tropotek.github.io/swag/>**. The same pages are in [`docs/`](docs/).
+
 | | |
 |---|---|
 | [Getting started](docs/getting-started.md) | Local development, containers, tests |
@@ -49,9 +55,6 @@ curl -X POST http://localhost:8080/api/pages \
 | [AI assistants](docs/ai-assistants.md) | Connecting any AI agent, with a portable skill |
 | [Architecture](docs/architecture.md) | Code map, data model, security model |
 | [Deploying to cPanel](docs/deployment-cpanel.md) | Building and publishing the production bundle |
-
-The `docs/` folder is set up for GitHub Pages: **Settings → Pages → Deploy from a branch →
-`/docs`**.
 
 ## Tests
 
