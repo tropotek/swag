@@ -9,6 +9,12 @@ document.addEventListener('submit', (event) => {
     }
 });
 
+document.addEventListener('click', (event) => {
+    if (event.target.closest('[data-print]')) {
+        window.print();
+    }
+});
+
 document.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-copy-target]');
     if (!button) return;

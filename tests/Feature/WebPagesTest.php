@@ -47,6 +47,15 @@ it('shows a page with rendered markdown', function () {
         ->assertSee('<strong>bold</strong>', false);
 });
 
+it('offers a print button and hides page chrome when printing', function () {
+    $page = Page::factory()->create();
+
+    $this->actingAs($page->user)->get(route('pages.show', $page))
+        ->assertSee('data-print', false)
+        ->assertSee('navbar navbar-expand-md bg-body border-bottom mb-4 d-print-none', false)
+        ->assertSee('page-actions d-flex gap-2 d-print-none', false);
+});
+
 it('returns 404 for another user\'s page on every route', function () {
     $page = Page::factory()->create(['title' => 'Original']);
     $intruder = User::factory()->create();

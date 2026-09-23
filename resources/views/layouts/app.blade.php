@@ -8,7 +8,7 @@
 </head>
 <body class="bg-body-tertiary">
 @auth
-    <nav class="navbar navbar-expand-md bg-body border-bottom mb-4">
+    <nav class="navbar navbar-expand-md bg-body border-bottom mb-4 d-print-none">
         <div class="container">
             <a class="navbar-brand fw-semibold" href="{{ route('home') }}">Swag</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
@@ -40,10 +40,10 @@
 @endauth
 <main class="container pb-5">
     @if (session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
+        <div class="alert alert-success d-print-none">{{ session('status') }}</div>
     @endif
     @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+        <div class="alert alert-danger d-print-none">{{ session('error') }}</div>
     @endif
     @yield('content')
 </main>
