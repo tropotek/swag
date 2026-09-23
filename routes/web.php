@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\UserPasswordController as AdminUserPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordController;
@@ -26,4 +28,10 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::put('/account', [AccountController::class, 'update'])->name('account.update');
     Route::get('/account/password', [PasswordController::class, 'edit'])->name('account.password.edit');
     Route::put('/account/password', [PasswordController::class, 'update'])->name('account.password.update');
+
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users', AdminUserController::class)->only(['index', 'create', 'store', 'destroy']);
+        Route::get('users/{user}/password', [AdminUserPasswordController::class, 'edit'])->name('users.password.edit');
+        Route::put('users/{user}/password', [AdminUserPasswordController::class, 'update'])->name('users.password.update');
+    });
 });

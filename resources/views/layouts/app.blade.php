@@ -19,6 +19,9 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Pages</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('tokens.index') }}">API tokens</a></li>
+                    @if (auth()->user()->is_admin)
+                        <li class="nav-item"><a class="nav-link" href="{{ route('admin.users.index') }}">Users</a></li>
+                    @endif
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="{{ route('account.edit') }}">{{ auth()->user()->name }}</a></li>
