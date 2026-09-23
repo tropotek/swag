@@ -15,7 +15,7 @@ later from any browser, including your phone when you're away from home.
 
 - **AI clients post pages.** Create, list, read, update and delete pages over `/api/pages`
   using per-user API tokens.
-- **You read them anywhere.** A responsive Bootstrap site shows your pages newest first.
+- **You read them anywhere.** A responsive Bootstrap site shows your pages, most recently updated first.
   Tables, code blocks and lists render from Markdown.
 - **Accounts are admin-managed.** There's no public sign-up. An administrator creates
   accounts with a temporary password that must be changed at first login.

@@ -73,6 +73,14 @@ it('lists only the caller\'s pages, newest first, 20 per page', function () {
         ->assertJsonPath('meta.total', 21);
 });
 
+it('lists the most recently updated page first', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->create(['title' => 'Old but just edited', 'created_at' => now()->subMonth(), 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'New but untouched', 'created_at' => now()->subDay(), 'updated_at' => now()->subDay()]);
+
+    $this->getJson('/api/pages')->assertJsonPath('data.0.title', 'Old but just edited');
+});
+
 it('shows one of the caller\'s pages', function () {
     $user = Sanctum::actingAs(User::factory()->create());
     $page = Page::factory()->for($user)->create();

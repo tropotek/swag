@@ -13,7 +13,7 @@ class PageController extends Controller
 {
     public function index(Request $request): View
     {
-        $pages = $request->user()->pages()->latest()->latest('id')->paginate(20);
+        $pages = $request->user()->pages()->latest('updated_at')->latest('id')->paginate(20);
 
         return view('pages.index', ['pages' => $pages]);
     }

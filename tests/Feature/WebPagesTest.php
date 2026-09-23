@@ -15,6 +15,14 @@ it('lists only the user\'s own pages, newest first', function () {
         ->assertDontSee('Someone else page');
 });
 
+it('puts the most recently updated page first', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->create(['title' => 'Old but just edited', 'created_at' => now()->subMonth(), 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'New but untouched', 'created_at' => now()->subDay(), 'updated_at' => now()->subDay()]);
+
+    $this->actingAs($user)->get('/')->assertSeeInOrder(['Old but just edited', 'New but untouched']);
+});
+
 it('shows an empty state', function () {
     $this->actingAs(User::factory()->create())->get('/')->assertSee('No pages yet');
 });

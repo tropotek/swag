@@ -17,7 +17,7 @@ class PageController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         return PageResource::collection(
-            $request->user()->pages()->latest()->latest('id')->paginate(20)
+            $request->user()->pages()->latest('updated_at')->latest('id')->paginate(20)
         );
     }
 

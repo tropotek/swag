@@ -54,7 +54,7 @@ flattened. There's no image upload, so images need a public URL.
 
 `GET /api/pages?page=1`
 
-Returns your pages, newest first, 20 per page.
+Returns your pages, most recently updated first, 20 per page.
 
 ```json
 {

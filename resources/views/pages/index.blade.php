@@ -9,7 +9,7 @@
         @foreach ($pages as $page)
             <a href="{{ route('pages.show', $page) }}" class="list-group-item list-group-item-action">
                 <div class="fw-semibold text-break">{{ $page->title }}</div>
-                <small class="text-body-secondary">{{ $page->created_at->format('j M Y, g:ia') }}</small>
+                <small class="text-body-secondary">Updated {{ $page->updated_at->format('j M Y, g:ia') }}</small>
             </a>
         @endforeach
     </div>
