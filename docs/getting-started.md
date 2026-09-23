@@ -1,8 +1,3 @@
----
-title: Getting started
-nav_order: 2
----
-
 # Getting started
 
 Development runs entirely in Docker. You don't need PHP, Composer or Node on the host.

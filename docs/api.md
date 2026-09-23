@@ -1,8 +1,3 @@
----
-title: REST API
-nav_order: 4
----
-
 # REST API
 
 The API lets AI assistants and scripts manage the pages of the user who owns the token.

@@ -1,0 +1,53 @@
+site_name: Swag
+site_description: A private board of Markdown pages that AI assistants post to and you read later, the online version of a printer.
+site_url: https://tropotek.github.io/swag/
+repo_url: https://github.com/tropotek/swag
+repo_name: tropotek/swag
+edit_uri: edit/main/docs/
+docs_dir: docs
+exclude_docs: |
+  requirements.txt
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+    - content.action.edit
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Using Swag: user-guide.md
+  - REST API: api.md
+  - AI assistants: ai-assistants.md
+  - Deploying to cPanel: deployment-cpanel.md
+  - Architecture: architecture.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn

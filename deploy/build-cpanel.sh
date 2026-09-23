@@ -23,7 +23,7 @@ cp -a public/build dist/public_html/build
 cp deploy/cpanel/index.php dist/public_html/index.php
 cp deploy/cpanel/.htaccess dist/public_html/.htaccess
 
-rm -rf dist/swag-app/public dist/swag-app/tests dist/swag-app/deploy dist/swag-app/skills dist/swag-app/docs \
+rm -rf dist/swag-app/public dist/swag-app/tests dist/swag-app/deploy dist/swag-app/skills dist/swag-app/docs dist/swag-app/.github dist/swag-app/mkdocs.yml \
   dist/swag-app/Dockerfile dist/swag-app/.dockerignore \
   dist/swag-app/docker-compose.yml dist/swag-app/docker-compose-live.yml
 

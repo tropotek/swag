@@ -1,8 +1,3 @@
----
-title: Deploying to cPanel
-nav_order: 6
----
-
 # Deploying Swag to cPanel
 
 This guide is for cPanel shared hosting where the web root is fixed to `public_html`.

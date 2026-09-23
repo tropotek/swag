@@ -1,8 +1,3 @@
----
-title: Using Swag
-nav_order: 3
----
-
 # Using Swag
 
 ## Logging in

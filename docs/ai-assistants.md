@@ -1,8 +1,3 @@
----
-title: AI assistants
-nav_order: 5
----
-
 # Connecting an AI assistant
 
 Swag isn't tied to any one assistant. Anything that can make an HTTP request with a
