@@ -17,7 +17,7 @@
     @csrf
     <div class="col-sm">
         <label for="name" class="visually-hidden">Token name</label>
-        <input id="name" name="name" value="{{ old('name') }}" placeholder="Token name, e.g. Claude"
+        <input id="name" name="name" value="{{ old('name') }}" placeholder="Token name, e.g. Laptop agent"
                class="form-control @error('name') is-invalid @enderror" required maxlength="255">
         @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>

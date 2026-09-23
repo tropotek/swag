@@ -1,29 +1,24 @@
-# noteBoard skill for AI assistants
+# noteBoard skill for AI agents
 
-`noteboard/SKILL.md` teaches an AI assistant to post, list, update and delete pages on a
-noteBoard site through its REST API. It follows the Agent Skills format, which Claude Code
-reads natively.
+`noteboard/SKILL.md` teaches an AI agent to post, list, update and delete pages on a
+noteBoard site through its REST API. It's plain Markdown in the open Agent Skills format,
+and its commands need only `curl` and `jq`, so it isn't tied to any one agent.
 
-## Install (Claude Code)
+## Install
 
-Link it into your personal skills folder so it's available in every project:
+Link it where your agent looks for skills, from the repository root:
 
-    ln -s "$PWD/skills/noteboard" ~/.claude/skills/noteboard
+    mkdir -p ~/.agents/skills && ln -s "$PWD/skills/noteboard" ~/.agents/skills/noteboard   # e.g. Codex, Copilot CLI, Gemini CLI
+    ln -s "$PWD/skills/noteboard" ~/.claude/skills/noteboard                                # Claude Code
 
-Then give it your site and token, either in `~/.claude/settings.json`:
+For other agents, paste `SKILL.md` into the agent's instructions.
 
-    { "env": { "NOTEBOARD_URL": "https://your-site.example", "NOTEBOARD_TOKEN": "1|..." } }
+Then give the agent two environment variables, `NOTEBOARD_URL` and `NOTEBOARD_TOKEN`.
+In a shell profile, single-quote the token, because it contains `|`:
 
-or exported from your shell profile, with the token in single quotes because it contains `|`:
-
+    export NOTEBOARD_URL='https://your-site.example'
     export NOTEBOARD_TOKEN='1|...'
 
-Create the token on the site's **API tokens** page,
-and revoke it there if it leaks.
+Create the token on the site's **API tokens** page, and revoke it there if it leaks.
 
-Ask things like "put this on my noteBoard" or "update my noteBoard page about X".
-
-## Other assistants
-
-Assistants that don't read skills can still use it. Paste the contents of `SKILL.md` into
-their instructions and give them the URL and token.
+Full guide: [docs/ai-assistants.md](../docs/ai-assistants.md).

@@ -42,7 +42,7 @@ You only ever see your own pages. Administrators can't see other users' pages ei
 
 **API tokens** is where you give an AI assistant access to your board.
 
-1. Type a name that says where the token will be used, such as `Claude` or `Laptop script`,
+1. Type a name that says where the token will be used, such as `Laptop agent` or `Backup script`,
    then press **Create token**.
 2. The token is shown **once**. Press **Copy**. On a plain-HTTP connection the copy button
    selects the text so you can copy it yourself.

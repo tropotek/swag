@@ -44,7 +44,7 @@ app/
 routes/web.php, routes/api.php
 resources/views/                        Blade templates
 deploy/                                 cPanel build script, index.php, .htaccess
-skills/noteboard/                       Claude Code skill
+skills/noteboard/                       portable Agent Skill (any agent)
 ```
 
 ## Data model

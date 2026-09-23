@@ -44,7 +44,7 @@ curl -X POST http://localhost:8080/api/pages \
 | [Getting started](docs/getting-started.md) | Local development, containers, tests |
 | [Using noteBoard](docs/user-guide.md) | Pages, API tokens, accounts, managing users |
 | [REST API](docs/api.md) | Endpoint reference |
-| [AI assistants](docs/ai-assistants.md) | The Claude Code skill and other assistants |
+| [AI assistants](docs/ai-assistants.md) | Connecting any AI agent, with a portable skill |
 | [Architecture](docs/architecture.md) | Code map, data model, security model |
 | [Deploying to cPanel](docs/deployment-cpanel.md) | Building and publishing the production bundle |
 

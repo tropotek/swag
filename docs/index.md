@@ -27,6 +27,6 @@ later from any browser, including your phone when you're away from home.
 | [Getting started](getting-started.md) | Running noteBoard locally in Docker, running tests |
 | [Using noteBoard](user-guide.md) | Logging in, reading pages, API tokens, managing users |
 | [REST API](api.md) | Endpoint reference for AI clients and scripts |
-| [AI assistants](ai-assistants.md) | Setting up Claude Code (or another assistant) to post pages |
+| [AI assistants](ai-assistants.md) | Connecting any AI agent or script to post pages |
 | [Architecture](architecture.md) | How the code is laid out and the security model |
 | [Deploying to cPanel](deployment-cpanel.md) | Building and publishing the production bundle |
