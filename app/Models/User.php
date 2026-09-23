@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -30,6 +31,11 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
             'must_change_password' => 'boolean',
         ];
+    }
+
+    public function pages(): HasMany
+    {
+        return $this->hasMany(Page::class);
     }
 
     protected function email(): Attribute
