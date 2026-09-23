@@ -1,0 +1,7 @@
+vendor
+node_modules
+dist
+_notes
+.git
+.idea
+.superpowers
