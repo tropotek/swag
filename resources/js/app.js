@@ -8,3 +8,16 @@ document.addEventListener('submit', (event) => {
         event.preventDefault();
     }
 });
+
+document.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-copy-target]');
+    if (!button) return;
+    const input = document.querySelector(button.dataset.copyTarget);
+    input.select();
+    try {
+        await navigator.clipboard.writeText(input.value);
+        button.textContent = 'Copied';
+    } catch {
+        button.textContent = 'Selected: copy manually';
+    }
+});

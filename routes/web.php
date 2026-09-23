@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -16,6 +17,10 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
 
     Route::get('/', [PageController::class, 'index'])->name('home');
     Route::resource('pages', PageController::class)->only(['show', 'edit', 'update', 'destroy']);
+
+    Route::get('/tokens', [TokenController::class, 'index'])->name('tokens.index');
+    Route::post('/tokens', [TokenController::class, 'store'])->name('tokens.store');
+    Route::delete('/tokens/{token}', [TokenController::class, 'destroy'])->whereNumber('token')->name('tokens.destroy');
 
     Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
     Route::put('/account', [AccountController::class, 'update'])->name('account.update');
