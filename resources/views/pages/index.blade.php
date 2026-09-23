@@ -7,9 +7,9 @@
 @else
     <div class="list-group mb-3">
         @foreach ($pages as $page)
-            <a href="{{ route('pages.show', $page) }}" class="list-group-item list-group-item-action">
-                <div class="fw-semibold text-break">{{ $page->title }}</div>
-                <small class="text-body-secondary">Updated {{ $page->updated_at->format('j M Y, g:ia') }}</small>
+            <a href="{{ route('pages.show', $page) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-baseline gap-3">
+                <span class="fw-semibold text-break">{{ $page->title }}</span>
+                <small class="text-body-secondary text-nowrap" title="Updated {{ $page->updated_at->format('j M Y, g:ia') }}">{{ $page->updated_at->format('j M Y') }}</small>
             </a>
         @endforeach
     </div>
