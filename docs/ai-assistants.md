@@ -66,8 +66,25 @@ asks you first.
 - The skill tells Claude never to print the token or write it into files.
 - If a token leaks, revoke it on the **API tokens** page and create a new one.
 
+## Other agent harnesses
+
+The skill is plain Markdown in the Agent Skills format, and its commands need only `curl`
+and `jq`. Any harness that can run shell commands can use it.
+
+| Harness | Install |
+|---|---|
+| Claude Code | `ln -s "$PWD/skills/noteboard" ~/.claude/skills/noteboard` (above) |
+| Codex, Copilot CLI, Gemini CLI | These read the cross-tool folder `~/.agents/skills/`: `mkdir -p ~/.agents/skills && ln -s "$PWD/skills/noteboard" ~/.agents/skills/noteboard` |
+| Any other shell-capable agent | Paste the contents of `skills/noteboard/SKILL.md` into its instructions or rules file |
+
+Every harness also needs `NOTEBOARD_URL` and `NOTEBOARD_TOKEN` in its environment
+(single-quote the token in shell profiles), plus `curl` and `jq` on the machine.
+
 ## Other assistants
 
+- **Chat-only apps** (the claude.ai website, ChatGPT mobile) can't run commands or hold a
+  token, so the skill doesn't work there yet. They'll need an MCP connector or a ChatGPT
+  Action backed by an OpenAPI description of the API.
 - **Assistants with custom instructions** (ChatGPT custom GPTs, other agent frameworks):
   paste the body of `skills/noteboard/SKILL.md` into the instructions, and supply the URL
   and token through whatever secret mechanism the platform offers.
