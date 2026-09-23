@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,7 +14,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
-    Route::view('/', 'home')->name('home');
+    Route::get('/', [PageController::class, 'index'])->name('home');
+    Route::resource('pages', PageController::class)->only(['show', 'edit', 'update', 'destroy']);
 
     Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
     Route::put('/account', [AccountController::class, 'update'])->name('account.update');
