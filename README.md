@@ -2,8 +2,6 @@
 
 [![Docs](https://img.shields.io/badge/docs-tropotek.github.io%2Fswag-2f6feb)](https://tropotek.github.io/swag/)
 
-**[Read the documentation →](https://tropotek.github.io/swag/)**
-
 *A swag is the Aussie bedroll you carry everything in. This one carries your notes.*
 
 A small private website for Markdown pages. You chat with an AI assistant ("add this to
