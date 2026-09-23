@@ -6,6 +6,11 @@ Swag is a small private website for Markdown pages. You chat with an AI assistan
 ("add this to the swag mate"), it posts pages through a token-authenticated REST API, and you read them
 later from any browser, including your phone when you're away from home.
 
+For example: you're on your desktop asking your agent to spec out a shopping list, or the
+parts list for a project you're planning. Tell it to "chuck that in the swag", and it's
+posted as a page you can pull up on your phone at the shop or the hardware store — no
+copy-pasting between devices.
+
 ## What it does
 
 - **AI clients post pages.** Create, list, read, update and delete pages over `/api/pages`
