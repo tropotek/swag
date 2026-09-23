@@ -1,0 +1,11 @@
+title: noteBoard
+description: A private board of Markdown pages that AI assistants post to and you read later.
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
+search_enabled: true
+heading_anchors: true

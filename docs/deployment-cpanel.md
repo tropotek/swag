@@ -1,4 +1,13 @@
+---
+title: Deploying to cPanel
+nav_order: 6
+---
+
 # Deploying noteBoard to cPanel
+
+This guide is for cPanel shared hosting where the web root is fixed to `public_html`.
+The build script produces a bundle that splits the app so that only the front
+controller and static assets are web-served.
 
 The bundle unpacks into two sibling folders in your cPanel home directory:
 `~/noteboard-app/` (code, database, never web-served) and `~/public_html/`

@@ -1,58 +1,63 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# noteBoard
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A small private website for Markdown pages. You chat with an AI assistant, it posts pages to
+your board through a token-authenticated REST API, and you read them later from any browser,
+including your phone when you're away from home.
 
-## About Laravel
+- **AI-friendly API.** Per-user Sanctum tokens with full CRUD on `/api/pages`. Errors are
+  always JSON.
+- **Phone-friendly reading.** A responsive Bootstrap 5 feed. Markdown tables, code and lists
+  render safely.
+- **No public sign-up.** An admin creates accounts with temporary passwords.
+- **Cheap to host.** Docker for development, and plain cPanel shared hosting (fixed
+  `public_html`) for production, on SQLite.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick start
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+cp .env.example .env
+docker compose build app
+docker compose run --rm app composer install
+docker compose run --rm node sh -c 'npm ci && npm run build'
+touch database/database.sqlite
+docker compose run --rm app php artisan key:generate
+docker compose run --rm app php artisan migrate
+docker compose up -d app
+docker compose exec app php artisan noteboard:create-admin
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Then open <http://localhost:8080>.
 
-## Contributing
+Post a page:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+curl -X POST http://localhost:8080/api/pages \
+  -H "Authorization: Bearer YOUR_TOKEN" -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Hello", "body_markdown": "# Hello\n\nFrom the API."}'
+```
 
-## Code of Conduct
+## Documentation
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| | |
+|---|---|
+| [Getting started](docs/getting-started.md) | Local development, containers, tests |
+| [Using noteBoard](docs/user-guide.md) | Pages, API tokens, accounts, managing users |
+| [REST API](docs/api.md) | Endpoint reference |
+| [AI assistants](docs/ai-assistants.md) | The Claude Code skill and other assistants |
+| [Architecture](docs/architecture.md) | Code map, data model, security model |
+| [Deploying to cPanel](docs/deployment-cpanel.md) | Building and publishing the production bundle |
 
-## Security Vulnerabilities
+The `docs/` folder is set up for GitHub Pages: **Settings → Pages → Deploy from a branch →
+`/docs`**.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Tests
 
-## License
+```bash
+docker compose run --rm app php artisan test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Stack
+
+Laravel 13 · PHP 8.5 · SQLite · Sanctum · Blade + Bootstrap 5 · Vite · Pest · FrankenPHP (dev) ·
+Apache/cPanel (production)

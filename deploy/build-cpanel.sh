@@ -23,7 +23,7 @@ cp -a public/build dist/public_html/build
 cp deploy/cpanel/index.php dist/public_html/index.php
 cp deploy/cpanel/.htaccess dist/public_html/.htaccess
 
-rm -rf dist/noteboard-app/public dist/noteboard-app/tests dist/noteboard-app/deploy \
+rm -rf dist/noteboard-app/public dist/noteboard-app/tests dist/noteboard-app/deploy dist/noteboard-app/skills dist/noteboard-app/docs \
   dist/noteboard-app/Dockerfile dist/noteboard-app/.dockerignore \
   dist/noteboard-app/docker-compose.yml dist/noteboard-app/docker-compose-live.yml
 
