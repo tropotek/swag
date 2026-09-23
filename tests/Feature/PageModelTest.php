@@ -33,6 +33,14 @@ it('drops unsafe link targets', function () {
     expect(strtolower($html))->not->toContain('javascript:')->not->toContain('data:text');
 });
 
+it('renders deeply nested hostile markdown without exhausting memory', function () {
+    foreach ([str_repeat('>', 50000), str_repeat('- ', 50000)] as $body) {
+        $html = Page::factory()->make(['body_markdown' => $body])->renderedBody();
+
+        expect($html)->toBeString();
+    }
+});
+
 it('belongs to a user who has many pages', function () {
     $user = User::factory()->create();
     Page::factory()->for($user)->count(2)->create();

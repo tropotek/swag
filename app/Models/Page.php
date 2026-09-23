@@ -18,6 +18,7 @@ class Page extends Model
     private const MARKDOWN_OPTIONS = [
         'html_input' => 'escape',
         'allow_unsafe_links' => false,
+        'max_nesting_level' => 50,
     ];
 
     public function user(): BelongsTo

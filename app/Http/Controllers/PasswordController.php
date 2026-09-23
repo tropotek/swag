@@ -18,7 +18,7 @@ class PasswordController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'confirmed', 'different:current_password', Password::defaults()],
         ]);
 
         $request->user()->forceFill([

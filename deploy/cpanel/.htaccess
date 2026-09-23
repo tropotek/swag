@@ -5,10 +5,10 @@
 
     RewriteEngine On
 
-    # Force HTTPS
+    # Force HTTPS (308 so API clients re-send POST/PUT bodies instead of switching to GET)
     RewriteCond %{HTTPS} !=on
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=308]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

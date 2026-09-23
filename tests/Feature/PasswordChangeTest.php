@@ -45,6 +45,18 @@ it('requires the current password', function () {
     expect($user->fresh()->must_change_password)->toBeTrue();
 });
 
+it('rejects reusing the temporary password', function () {
+    $user = User::factory()->mustChangePassword()->create(['password' => 'temporary-pass']);
+
+    $this->actingAs($user)->put(route('account.password.update'), [
+        'current_password' => 'temporary-pass',
+        'password' => 'temporary-pass',
+        'password_confirmation' => 'temporary-pass',
+    ])->assertSessionHasErrors('password');
+
+    expect($user->fresh()->must_change_password)->toBeTrue();
+});
+
 it('rejects a mismatched confirmation', function () {
     $user = User::factory()->create(['password' => 'old-password-1']);
 
