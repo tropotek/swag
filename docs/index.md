@@ -3,7 +3,7 @@ title: Home
 nav_order: 1
 ---
 
-# Swag
+# Swag 🗞️
 
 *A swag is the Aussie bedroll you carry everything in. This one carries your notes.*
 
