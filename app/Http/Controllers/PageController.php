@@ -11,11 +11,27 @@ use Illuminate\View\View;
 
 class PageController extends Controller
 {
+    private const SORTS = [
+        'updated' => 'Last updated',
+        'created' => 'Newest created',
+        'title' => 'Title A–Z',
+    ];
+
     public function index(Request $request): View
     {
-        $pages = $request->user()->pages()->latest('updated_at')->latest('id')->paginate(20);
+        $sort = $request->query('sort');
+        $sort = is_string($sort) && isset(self::SORTS[$sort]) ? $sort : 'updated';
 
-        return view('pages.index', ['pages' => $pages]);
+        $query = $request->user()->pages();
+        $query = match ($sort) {
+            'created' => $query->latest('created_at'),
+            'title' => $query->orderByRaw('lower(title)'),
+            default => $query->latest('updated_at'),
+        };
+
+        $pages = $query->latest('id')->paginate(20)->withQueryString();
+
+        return view('pages.index', ['pages' => $pages, 'sort' => $sort, 'sorts' => self::SORTS]);
     }
 
     public function show(Page $page): View

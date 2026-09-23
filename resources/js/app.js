@@ -9,6 +9,12 @@ document.addEventListener('submit', (event) => {
     }
 });
 
+document.addEventListener('change', (event) => {
+    if (event.target.matches('[data-autosubmit]')) {
+        event.target.form.submit();
+    }
+});
+
 document.addEventListener('click', (event) => {
     if (event.target.closest('[data-print]')) {
         window.print();

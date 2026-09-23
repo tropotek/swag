@@ -23,6 +23,44 @@ it('puts the most recently updated page first', function () {
     $this->actingAs($user)->get('/')->assertSeeInOrder(['Old but just edited', 'New but untouched']);
 });
 
+it('sorts by title A to Z', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->create(['title' => 'Zebra fencing', 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'apple trees', 'updated_at' => now()->subDay()]);
+
+    $this->actingAs($user)->get('/?sort=title')->assertSeeInOrder(['apple trees', 'Zebra fencing']);
+});
+
+it('sorts by newest created', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->create(['title' => 'Old but just edited', 'created_at' => now()->subMonth(), 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'New but untouched', 'created_at' => now()->subDay(), 'updated_at' => now()->subDay()]);
+
+    $this->actingAs($user)->get('/?sort=created')->assertSeeInOrder(['New but untouched', 'Old but just edited']);
+});
+
+it('falls back to last updated for an unknown sort', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->create(['title' => 'Old but just edited', 'created_at' => now()->subMonth(), 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'New but untouched', 'created_at' => now()->subDay(), 'updated_at' => now()->subDay()]);
+
+    $this->actingAs($user)->get('/?sort=nonsense')->assertOk()->assertSeeInOrder(['Old but just edited', 'New but untouched']);
+});
+
+it('ignores a malformed sort parameter', function () {
+    $this->actingAs(User::factory()->create())->get('/?sort[]=title')->assertOk();
+});
+
+it('shows the sort dropdown with the current choice and keeps it in page links', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->count(21)->create();
+
+    $this->actingAs($user)->get('/?sort=title')
+        ->assertSee('name="sort"', false)
+        ->assertSee('<option value="title" selected>', false)
+        ->assertSee('sort=title&amp;page=2', false);
+});
+
 it('shows an empty state', function () {
     $this->actingAs(User::factory()->create())->get('/')->assertSee('No pages yet');
 });
