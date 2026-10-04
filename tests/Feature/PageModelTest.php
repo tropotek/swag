@@ -56,3 +56,19 @@ it('deletes pages when their user is deleted', function () {
 
     expect(Page::count())->toBe(0);
 });
+
+it('lets a table opt in to nowrap columns with a class', function () {
+    $html = Page::factory()->make([
+        'body_markdown' => "{.nowrap-col-1 .nowrap-col-2}\n| a | b |\n|---|---|\n| 1 | 2 |",
+    ])->renderedBody();
+
+    expect($html)->toContain('<table class="nowrap-col-1 nowrap-col-2">');
+});
+
+it('strips style and event attributes from attribute blocks', function () {
+    $html = Page::factory()->make([
+        'body_markdown' => "{style=\"display:none\" onclick=\"alert(1)\" .x}\n| a | b |\n|---|---|\n| 1 | 2 |",
+    ])->renderedBody();
+
+    expect($html)->not->toContain('style=')->not->toContain('onclick');
+});

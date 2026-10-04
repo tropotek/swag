@@ -56,6 +56,7 @@ Tell the user the returned `url`.
 
 - Title: at most 255 characters. Body: at most 1,000,000 characters.
 - Write Markdown (GitHub-flavoured). Raw HTML is shown as literal text, and `javascript:` links are removed.
+- To stop a table's first or second column wrapping (dates, odometer readings), put `{.nowrap-col-1 .nowrap-col-2}` on the line directly above the table. Use either class or both. No other attributes are allowed.
 - There's no image upload. Images only appear if they're referenced by a public URL.
 - Write the page so it stands alone: someone reading it later on a phone won't have this chat.
 

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use League\CommonMark\Extension\Attributes\AttributesExtension;
 
 #[Fillable(['title', 'body_markdown'])]
 class Page extends Model
@@ -21,6 +22,7 @@ class Page extends Model
         'html_input' => 'escape',
         'allow_unsafe_links' => false,
         'max_nesting_level' => 50,
+        'attributes' => ['allow' => ['class']],
     ];
 
     public const SORTS = [
@@ -53,6 +55,6 @@ class Page extends Model
 
     public function renderedBody(): string
     {
-        return Str::markdown($this->body_markdown, self::MARKDOWN_OPTIONS);
+        return Str::markdown($this->body_markdown, self::MARKDOWN_OPTIONS, [new AttributesExtension()]);
     }
 }
