@@ -51,12 +51,6 @@ These are read by Compose from the shell environment or `.env`:
 FrankenPHP is started with `SERVER_NAME=:80`, so it serves plain HTTP and doesn't try to issue
 certificates. Put a reverse proxy in front if you want HTTPS locally.
 
-### `docker-compose-live.yml`
-
-This is a byte-identical copy of `docker-compose.yml`. On the maintainer's machine, a
-hosting script starts any project that has this file. Keep the two in sync unless the live
-config genuinely needs to differ.
-
 ## Everyday commands
 
 ```bash
