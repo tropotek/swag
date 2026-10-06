@@ -1,5 +1,8 @@
 .page-body { overflow-wrap: anywhere; }
-.page-body img { max-width: 100%; height: auto; }
+/* Fluid at every width, and capped so a phone photo doesn't blow out on a wide screen. */
+.page-body img { max-width: min(100%, 900px); height: auto; }
+/* {.half} narrows the image only from tablet up: Bootstrap's .w-50 is 50% on a phone too. */
+@media (min-width: 768px) { .page-body img.half { max-width: min(100%, 50%); } }
 .page-body pre { overflow-x: auto; }
 .page-body table { display: block; overflow-x: auto; }
 .page-body th, .page-body td { border: 1px solid var(--bs-border-color); padding: .25rem .5rem; }

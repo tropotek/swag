@@ -448,7 +448,7 @@
           "body_markdown": {
             "type": "string",
             "maxLength": 1000000,
-            "description": "GitHub-flavoured Markdown. Required on create. Raw HTML is shown as literal text; javascript: links are removed. Put `{.nowrap-col-1 .nowrap-col-2}` on the line above a table to stop columns wrapping. To add an image or file, upload it with `POST /media` and paste the returned `markdown` into the body."
+            "description": "GitHub-flavoured Markdown. Required on create. Raw HTML is shown as literal text; javascript: links are removed. Put `{.nowrap-col-1 .nowrap-col-2}` on the line above a table to stop columns wrapping. To add an image or file, upload it with `POST /media` and paste the returned `markdown` into the body. Images scale to fit the screen; put `{.text-center}` on the line after an image to centre it, or `{.half}` straight after the link for half width on desktop. Only class attributes survive."
           }
         }
       },
