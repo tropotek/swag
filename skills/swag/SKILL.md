@@ -20,15 +20,22 @@ Check both with `[ -n "$SWAG_URL" ] && [ -n "$SWAG_TOKEN" ] && echo set`. If eit
 
 ## API
 
-All requests send `Authorization: Bearer $SWAG_TOKEN` and `Accept: application/json`.
+The API describes itself. Read the OpenAPI document first (no token needed) for the operations, parameters, limits and error shapes, and don't rely on memory:
 
-| Action | Request | Success |
-|---|---|---|
-| Create | `POST /api/pages` with `{"title", "body_markdown"}` | 201, `data.url` |
-| List (20/page) | `GET /api/pages?sort=updated\|created\|title&page=N` (default `updated`, most recent first; `title` is A–Z) | 200, `data[]`, `meta.total` |
-| Read | `GET /api/pages/{id}` | 200 |
-| Update (send only changed fields) | `PATCH /api/pages/{id}` | 200 |
-| Delete | `DELETE /api/pages/{id}` | 204 |
+```bash
+curl -sS "$SWAG_URL/api/openapi.json" | jq '.paths | map_values(map_values(.summary?))'   # overview
+curl -sS "$SWAG_URL/api/openapi.json" | jq '.paths["/pages"].get'                         # full detail for one operation
+```
+
+All other requests send `Authorization: Bearer $SWAG_TOKEN` and `Accept: application/json`. Search pages with `q` instead of paging through the whole list, for example:
+
+```bash
+curl -sS -G "$SWAG_URL/api/pages" --data-urlencode "q=tap repair" \
+  -H "Authorization: Bearer $SWAG_TOKEN" -H "Accept: application/json" |
+  jq '.data[] | {id, title, url}'
+```
+
+If the document can't be fetched, tell the user. The operations are create (`POST /api/pages`), list or search (`GET /api/pages`), read, update (`PATCH`) and delete under `/api/pages/{id}`.
 
 ## Posting a page
 
@@ -62,15 +69,10 @@ Tell the user the returned `url`.
 
 ## Errors
 
-| Status | Meaning |
-|---|---|
-| 401 | The token is missing, wrong or revoked. Ask the user for a new one. |
-| 404 | No such page, or it belongs to another user. |
-| 422 | Validation failed. The `errors` object names the field. |
-| 429 | Rate limited at 60 requests a minute. Wait, then retry. |
+`401` means the token is missing, wrong or revoked: ask the user for a new one. `429` means rate limited: wait, then retry. Other error shapes are in the OpenAPI document.
 
 ## Common mistakes
 
 - Deleting or overwriting a page without the user explicitly asking. Always confirm before `DELETE` or a `PATCH` that replaces the body.
-- Posting a duplicate. When updating "the page about X", list the pages first and `PATCH` the existing one.
+- Posting a duplicate. When updating "the page about X", search for it with `q` first and `PATCH` the existing one.
 - Using `http://` for a site that forces HTTPS. Use the URL exactly as the user configured it.

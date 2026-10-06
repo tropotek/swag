@@ -20,7 +20,7 @@ Swag doesn't send email. Ask an administrator to set a new temporary password fo
 
 ## Pages
 
-**Pages** (the home page) lists your pages, most recently updated first, 20 per screen. Editing a page moves it back to the top. Tap a title to
+**Pages** (the home page) lists your pages, most recently updated first, 50 per screen (the dropdown also offers 20, 100 and 200). Use the search box in the top bar to find pages by words in the title or body; results are ordered best match first. Editing a page moves it back to the top. Tap a title to
 read it.
 
 On a page you can:

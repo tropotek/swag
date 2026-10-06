@@ -13,11 +13,25 @@ class PageController extends Controller
 {
     public function index(Request $request): View
     {
-        $sort = Page::sortKey($request->query('sort'));
+        $term = Page::searchTerm($request->query('q'));
+        $searching = $term !== '';
+        $sort = Page::sortKey($request->query('sort'), $searching);
+        $perPage = Page::perPage($request->query('per_page'));
 
-        $pages = $request->user()->pages()->sorted($sort)->paginate(20)->withQueryString();
+        $pages = $request->user()->pages()
+            ->search($term)
+            ->sorted($sort)
+            ->paginate($perPage)
+            ->withQueryString();
 
-        return view('pages.index', ['pages' => $pages, 'sort' => $sort, 'sorts' => Page::SORTS]);
+        return view('pages.index', [
+            'pages' => $pages,
+            'sort' => $sort,
+            'sorts' => $searching ? [Page::RELEVANCE => 'Best match'] + Page::SORTS : Page::SORTS,
+            'perPage' => $perPage,
+            'perPageOptions' => Page::PER_PAGE_OPTIONS,
+            'term' => $term,
+        ]);
     }
 
     public function show(Page $page): View

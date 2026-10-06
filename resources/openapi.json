@@ -1,0 +1,416 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Swag API",
+    "version": "1.0.0",
+    "description": "Manage the Markdown pages of the user who owns the Bearer token. Send `Accept: application/json`. Rate limit: 60 requests per minute. Build request JSON with a real encoder (jq, json.dumps, JSON.stringify); Markdown contains quotes and newlines that break hand-written JSON."
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/pages": {
+      "get": {
+        "operationId": "listPages",
+        "summary": "List or search your pages",
+        "description": "With `q`, results default to best match first (title matches rank above body matches). Without `q`, the default sort is most recently updated first. Every word of `q` must match (prefix match, so `wash` finds `washer`).",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "description": "Search words in title and body."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "updated",
+                "created",
+                "title",
+                "relevance"
+              ],
+              "default": "updated"
+            },
+            "description": "updated = most recently updated; created = newest created; title = A-Z ignoring case; relevance = best match (only with q, and the default then). Unknown values fall back to the default."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                20,
+                50,
+                100,
+                200
+              ],
+              "default": 50
+            },
+            "description": "Page size. Unsupported values fall back to 50."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Page"
+                      }
+                    },
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "first": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "last": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "next": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, wrong or revoked token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPage",
+        "summary": "Create a page",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created page. `data.url` is the link to give the user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, wrong or revoked token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed; `errors` names the field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pages/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          },
+          "description": "Page id."
+        }
+      ],
+      "get": {
+        "operationId": "getPage",
+        "summary": "Read one page",
+        "responses": {
+          "200": {
+            "description": "The page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, wrong or revoked token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such page, or it belongs to another user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePage",
+        "summary": "Update a page",
+        "description": "Send only the fields you are changing; a field you send cannot be empty. `PUT` is accepted as an alias. Confirm with the user before replacing a body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, wrong or revoked token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such page, or it belongs to another user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed; `errors` names the field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deletePage",
+        "summary": "Delete a page",
+        "description": "Permanent. Confirm with the user first.",
+        "responses": {
+          "204": {
+            "description": "Deleted; no body."
+          },
+          "401": {
+            "description": "Missing, wrong or revoked token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such page, or it belongs to another user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token from the site's API tokens page."
+      }
+    },
+    "schemas": {
+      "Page": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body_markdown": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Link to the page in the web UI."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PageEnvelope": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Page"
+          }
+        }
+      },
+      "PageInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Required on create."
+          },
+          "body_markdown": {
+            "type": "string",
+            "maxLength": 1000000,
+            "description": "GitHub-flavoured Markdown. Required on create. Raw HTML is shown as literal text; javascript: links are removed. Put `{.nowrap-col-1 .nowrap-col-2}` on the line above a table to stop columns wrapping. No image upload; images need a public URL."
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

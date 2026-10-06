@@ -60,17 +60,17 @@ it('rejects a title over 255 characters', function () {
         ->assertJsonValidationErrors('title');
 });
 
-it('lists only the caller\'s pages, newest first, 20 per page', function () {
+it('lists only the caller\'s pages, newest first, 50 per page', function () {
     $user = Sanctum::actingAs(User::factory()->create());
-    Page::factory()->for($user)->count(20)->create(['created_at' => now()->subDay()]);
+    Page::factory()->for($user)->count(50)->create(['created_at' => now()->subDay()]);
     Page::factory()->for($user)->create(['title' => 'Newest']);
     Page::factory()->create();
 
     $this->getJson('/api/pages')
         ->assertOk()
-        ->assertJsonCount(20, 'data')
+        ->assertJsonCount(50, 'data')
         ->assertJsonPath('data.0.title', 'Newest')
-        ->assertJsonPath('meta.total', 21);
+        ->assertJsonPath('meta.total', 51);
 });
 
 it('lists the most recently updated page first', function () {
@@ -99,10 +99,63 @@ it('sorts by newest created', function () {
 
 it('keeps the sort in pagination links and ignores a malformed sort', function () {
     $user = Sanctum::actingAs(User::factory()->create());
-    Page::factory()->for($user)->count(21)->create();
+    Page::factory()->for($user)->count(51)->create();
 
     expect($this->getJson('/api/pages?sort=title')->json('links.next'))->toContain('sort=title');
     $this->getJson('/api/pages?sort[]=title')->assertOk();
+});
+
+it('honours per_page and falls back to 50 for unsupported values', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->count(51)->create();
+
+    $this->getJson('/api/pages?per_page=20')->assertJsonCount(20, 'data')->assertJsonPath('meta.per_page', 20);
+    $this->getJson('/api/pages?per_page=7')->assertJsonCount(50, 'data');
+    $this->getJson('/api/pages?per_page[]=20')->assertOk()->assertJsonCount(50, 'data');
+    expect($this->getJson('/api/pages?per_page=20')->json('links.next'))->toContain('per_page=20');
+});
+
+it('searches titles and bodies of the caller\'s pages only', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->create(['title' => 'Tap repair guide', 'body_markdown' => 'washers']);
+    Page::factory()->for($user)->create(['title' => 'Unrelated', 'body_markdown' => 'Replace the washer first']);
+    Page::factory()->for($user)->create(['title' => 'Gardening', 'body_markdown' => 'roses']);
+    Page::factory()->create(['title' => 'Tap repair for someone else']);
+
+    $this->getJson('/api/pages?q=tap')->assertJsonCount(1, 'data')->assertJsonPath('data.0.title', 'Tap repair guide');
+    $this->getJson('/api/pages?q=washer')->assertJsonCount(2, 'data');
+    expect($this->getJson('/api/pages?q=washer&per_page=20')->json('meta.total'))->toBe(2);
+});
+
+it('ranks title matches above body matches by default when searching', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->create(['title' => 'Notes', 'body_markdown' => 'about tap fittings', 'updated_at' => now()]);
+    Page::factory()->for($user)->create(['title' => 'Tap guide', 'body_markdown' => 'misc', 'updated_at' => now()->subDay()]);
+
+    $this->getJson('/api/pages?q=tap')->assertJsonPath('data.0.title', 'Tap guide');
+    $this->getJson('/api/pages?q=tap&sort=updated')->assertJsonPath('data.0.title', 'Notes');
+});
+
+it('survives hostile search input', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    Page::factory()->for($user)->create(['title' => 'Tap guide']);
+
+    foreach (['"', 'tap AND', 'NEAR(', '*', 'title:tap', "tap'; drop table pages;--", '   ', '(((', '-tap'] as $q) {
+        $this->getJson('/api/pages?'.http_build_query(['q' => $q]))->assertOk();
+    }
+    $this->getJson('/api/pages?q[]=tap')->assertOk()->assertJsonCount(1, 'data');
+});
+
+it('finds pages after they are updated and not after they are deleted', function () {
+    $user = Sanctum::actingAs(User::factory()->create());
+    $page = Page::factory()->for($user)->create(['title' => 'Before', 'body_markdown' => 'x']);
+
+    $this->patchJson("/api/pages/{$page->id}", ['title' => 'Zebra'])->assertOk();
+    $this->getJson('/api/pages?q=zebra')->assertJsonCount(1, 'data');
+    $this->getJson('/api/pages?q=before')->assertJsonCount(0, 'data');
+
+    $this->deleteJson("/api/pages/{$page->id}")->assertNoContent();
+    $this->getJson('/api/pages?q=zebra')->assertJsonCount(0, 'data');
 });
 
 it('shows one of the caller\'s pages', function () {

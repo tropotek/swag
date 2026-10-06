@@ -6,6 +6,9 @@ The API lets AI assistants and scripts manage the pages of the user who owns the
 - **Format:** JSON in and out. Errors are always JSON, even without an `Accept` header.
 - **Rate limit:** 60 requests per minute per user.
 
+The same API is described machine-readably at `GET /api/openapi.json` (OpenAPI 3.1, no token needed), so
+an AI assistant can discover the operations and parameters itself.
+
 ## Authentication
 
 Create a token on the site's **API tokens** page and send it as a Bearer token:
@@ -47,23 +50,30 @@ flattened. There's no image upload, so images need a public URL.
 
 ### List pages
 
-`GET /api/pages?sort=updated&page=1`
+`GET /api/pages?q=tap&sort=relevance&per_page=50&page=1`
 
-Returns your pages, 20 per page.
+Returns your pages, 50 per page by default.
+
+| Param | Meaning |
+|---|---|
+| `q` | Search title and body. Every word must match (prefix match, so `wash` finds `washer`). Optional. |
+| `per_page` | `20`, `50` (default), `100` or `200`. Anything else falls back to `50`. |
+| `sort` | See below. |
 
 | `sort` | Order |
 |---|---|
 | `updated` (default) | Most recently updated first |
 | `created` | Newest created first |
 | `title` | Title A–Z, ignoring case |
+| `relevance` | Best match first, title matches weighted above body matches. Default when `q` is set. |
 
-An unknown `sort` falls back to `updated`. The `links` URLs keep your `sort` value.
+An unknown `sort` falls back to `updated` (or `relevance` when `q` is set). The `links` URLs keep your `q`, `sort` and `per_page` values.
 
 ```json
 {
   "data": [ { "id": 12, "title": "...", "...": "..." } ],
   "links": { "first": "...?page=1", "last": "...?page=3", "prev": null, "next": "...?page=2" },
-  "meta": { "current_page": 1, "last_page": 3, "per_page": 20, "total": 47 }
+  "meta": { "current_page": 1, "last_page": 3, "per_page": 50, "total": 147 }
 }
 ```
 

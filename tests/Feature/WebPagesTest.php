@@ -53,7 +53,7 @@ it('ignores a malformed sort parameter', function () {
 
 it('shows the sort dropdown with the current choice and keeps it in page links', function () {
     $user = User::factory()->create();
-    Page::factory()->for($user)->count(21)->create();
+    Page::factory()->for($user)->count(51)->create();
 
     $this->actingAs($user)->get('/?sort=title')
         ->assertSee('name="sort"', false)
@@ -65,10 +65,10 @@ it('shows an empty state', function () {
     $this->actingAs(User::factory()->create())->get('/')->assertSee('No pages yet');
 });
 
-it('paginates the feed at 20', function () {
+it('paginates the feed at 50 by default', function () {
     $user = User::factory()->create();
     Page::factory()->for($user)->create(['title' => 'The very first page', 'created_at' => now()->subYear()]);
-    Page::factory()->for($user)->count(20)->create();
+    Page::factory()->for($user)->count(50)->create();
 
     $this->actingAs($user)->get('/')->assertDontSee('The very first page');
     $this->actingAs($user)->get('/?page=2')->assertSee('The very first page');
@@ -142,4 +142,48 @@ it('deletes a page', function () {
     $this->actingAs($page->user)->delete(route('pages.destroy', $page))->assertRedirect(route('home'));
 
     expect(Page::count())->toBe(0);
+});
+
+it('lets the user pick a page size and keeps it in page links', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->count(25)->create();
+
+    $this->actingAs($user)->get('/?per_page=20')
+        ->assertSee('name="per_page"', false)
+        ->assertSee('<option value="20" selected>', false)
+        ->assertSee('per_page=20&amp;page=2', false);
+    $this->actingAs($user)->get('/')->assertSee('<option value="50" selected>', false);
+    $this->actingAs($user)->get('/?per_page=7')->assertSee('<option value="50" selected>', false);
+    $this->actingAs($user)->get('/?per_page[]=7')->assertOk();
+});
+
+it('searches from the nav box and lists matching pages', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->create(['title' => 'Tap repair guide']);
+    Page::factory()->for($user)->create(['title' => 'Gardening']);
+    Page::factory()->create(['title' => 'Tap repair for someone else']);
+
+    $this->actingAs($user)->get('/?q=tap')
+        ->assertSee('name="q"', false)
+        ->assertSee('Tap repair guide')
+        ->assertDontSee('Gardening')
+        ->assertDontSee('someone else')
+        ->assertSee('Best match');
+});
+
+it('puts the search box before the theme toggle', function () {
+    $this->actingAs(User::factory()->create())->get('/')->assertSeeInOrder(['name="q"', 'id="theme-toggle"'], false);
+});
+
+it('keeps the search term in page links and says when nothing matches', function () {
+    $user = User::factory()->create();
+    Page::factory()->for($user)->count(21)->create(['title' => 'Tap thing']);
+
+    $this->actingAs($user)->get('/?q=tap&per_page=20')->assertSee('q=tap&amp;per_page=20&amp;page=2', false);
+    $this->actingAs($user)->get('/?q=nomatchatall')->assertSee('No pages match');
+});
+
+it('escapes the search term', function () {
+    $this->actingAs(User::factory()->create())->get('/?q='.urlencode('"><script>alert(1)</script>'))
+        ->assertDontSee('<script>alert(1)</script>', false);
 });

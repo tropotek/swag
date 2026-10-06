@@ -16,10 +16,13 @@ class PageController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
+        $term = Page::searchTerm($request->query('q'));
+
         return PageResource::collection(
             $request->user()->pages()
-                ->sorted(Page::sortKey($request->query('sort')))
-                ->paginate(20)
+                ->search($term)
+                ->sorted(Page::sortKey($request->query('sort'), $term !== ''))
+                ->paginate(Page::perPage($request->query('per_page')))
                 ->withQueryString()
         );
     }

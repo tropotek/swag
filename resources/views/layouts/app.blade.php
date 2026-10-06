@@ -30,7 +30,17 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('admin.users.index') }}">Users</a></li>
                     @endif
                 </ul>
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-md-center">
+                    <li class="nav-item me-md-2 mb-2 mb-md-0">
+                        <form method="GET" action="{{ route('home') }}" role="search">
+                            <label for="nav-search" class="visually-hidden">Search pages</label>
+                            <div class="input-group input-group-sm">
+                                <input type="search" id="nav-search" name="q" value="{{ request()->routeIs('home') ? \App\Models\Page::searchTerm(request()->query('q')) : '' }}"
+                                       class="form-control" placeholder="Search pages" maxlength="200">
+                                <button type="submit" class="btn btn-outline-secondary" aria-label="Search">🔍</button>
+                            </div>
+                        </form>
+                    </li>
                     <li class="nav-item">
                         <button type="button" id="theme-toggle" class="nav-link btn btn-link" aria-label="Toggle light/dark theme">🌙</button>
                     </li>
