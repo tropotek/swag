@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class MediaUploader
 {
@@ -18,7 +19,12 @@ class MediaUploader
         $mime = $file->getMimeType() ?: 'application/octet-stream';
         $size = (int) $file->getSize();
 
-        Storage::disk(Media::DISK)->putFileAs('media', $file, $uuid);
+        // The disk is configured with throw => false, so a failed write returns false and logs
+        // nothing. Without this check an unwritable storage directory would return 201 with a
+        // markdown link to bytes that were never stored.
+        if (Storage::disk(Media::DISK)->putFileAs('media', $file, $uuid) === false) {
+            throw new RuntimeException('Could not write the uploaded file to the '.Media::DISK.' disk.');
+        }
 
         return $user->media()->create([
             'uuid' => $uuid,

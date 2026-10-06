@@ -33,7 +33,9 @@ class MediaRequest extends FormRequest
 
     public function messages(): array
     {
-        $limit = (int) round(config('swag.media.max_kb') / 1024).' MB';
+        $kb = (int) config('swag.media.max_kb');
+        // Below a megabyte, stating it in MB would round the limit to "0 MB".
+        $limit = $kb >= 1024 ? round($kb / 1024, 1).' MB' : $kb.' KB';
 
         return [
             'file.required' => "No file received. It may be larger than the server allows (limit {$limit}).",

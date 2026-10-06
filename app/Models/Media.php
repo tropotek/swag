@@ -32,8 +32,10 @@ class Media extends Model
 
     public static function hasBlockedExtension(string $name): bool
     {
+        // Strip every kind of space and invisible formatting character, not just ASCII
+        // whitespace: "payload.exe\u{00A0}" must be blocked exactly like "payload.exe ".
         $parts = array_map(
-            fn (string $part) => trim($part),
+            fn (string $part) => preg_replace('/[\s\p{Z}\p{Cf}]+/u', '', $part) ?? $part,
             explode('.', strtolower(basename(str_replace('\\', '/', $name)))),
         );
         array_shift($parts);

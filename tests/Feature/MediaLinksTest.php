@@ -33,6 +33,25 @@ it('does not treat a /media/ path on another host as ours', function () {
     expect(renderBody('[x](https://evil.example/media/abc/x.zip)'))->not->toContain('target=');
 });
 
+/**
+ * An absolute media URL is baked into the page body when the API creates the page, so it can
+ * carry a different host from the one the reader is on. The configured app URL counts as ours
+ * too, or the owner opening their own page by the other hostname the app answers on would lose
+ * the new tab and navigate away from the page they were reading.
+ */
+it('treats the configured app url as ours even when the request host differs', function () {
+    config(['app.url' => 'https://swag.example']);
+
+    expect(renderBody('[kit](https://swag.example/media/abc/kit.zip)'))->toContain('target="_blank"');
+});
+
+// Built from config so it varies only the port: a bare different host would pass either way.
+it('does not treat our host on a different port as ours', function () {
+    $host = parse_url(config('app.url'), PHP_URL_HOST);
+
+    expect(renderBody('[x](http://'.$host.':9999/media/abc/x.zip)'))->not->toContain('target=');
+});
+
 it('does not match look-alike paths', function () {
     expect(renderBody('[x](/mediax/abc) [y](/pages/media/abc)'))->not->toContain('target=');
 });

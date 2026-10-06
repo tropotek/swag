@@ -71,7 +71,7 @@ it('does not trust an image extension on a file that is really html', function (
         ->assertCreated();
 
     $media = Media::sole();
-    expect($media->mime_type)->not->toBe('image/png')
+    expect($media->mime_type)->toBe('text/html')
         ->and($media->isInline())->toBeFalse()
         ->and($media->isImage())->toBeFalse()
         ->and($response->json('data.markdown'))->toStartWith('[');
@@ -106,11 +106,23 @@ it('accepts a zip and ordinary documents', function (string $name) {
 
 it('rejects a file over the size limit and names the limit', function () {
     Sanctum::actingAs(User::factory()->create());
-    config(['swag.media.max_kb' => 100]);
 
-    $this->postJson('/api/media', ['file' => UploadedFile::fake()->create('big.bin', 101)])
+    $response = $this->postJson('/api/media', ['file' => UploadedFile::fake()->create('big.bin', 25601)])
         ->assertStatus(422)
         ->assertJsonValidationErrors('file');
+
+    expect($response->json('errors.file.0'))->toContain('25 MB');
+});
+
+it('states a sub-megabyte limit in kilobytes rather than rounding it to 0 MB', function () {
+    Sanctum::actingAs(User::factory()->create());
+    config(['swag.media.max_kb' => 100]);
+
+    $response = $this->postJson('/api/media', ['file' => UploadedFile::fake()->create('big.bin', 101)])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('file');
+
+    expect($response->json('errors.file.0'))->toContain('100 KB')->not->toContain('0 MB');
 
     $this->postJson('/api/media', ['file' => UploadedFile::fake()->create('ok.bin', 100)])->assertCreated();
 });

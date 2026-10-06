@@ -13,8 +13,8 @@ The bundle unpacks into two sibling folders in your cPanel home directory:
 In cPanel, check that:
 - PHP (MultiPHP Manager) is set to 8.5.
 - The `pdo_sqlite` and `fileinfo` extensions are enabled (Select PHP Version → Extensions).
-  `fileinfo` is what detects an uploaded file's real type; without it, uploads fall back to the
-  type the client claims.
+  `fileinfo` is what detects an uploaded file's real type. Without it, and without the `file`
+  binary, every upload fails with a `500`.
 - In **MultiPHP INI Editor**, `upload_max_filesize` is `26M` and `post_max_size` is `28M` for the
   domain. Without this, uploads over PHP's small default fail with "No file received".
 - Terminal (or SSH) is available.
