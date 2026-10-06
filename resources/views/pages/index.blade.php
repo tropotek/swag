@@ -9,31 +9,34 @@
             Pages
         @endif
     </h1>
-    <form method="GET" action="{{ route('home') }}" class="d-flex gap-2">
-        @if ($term !== '')
-            <input type="hidden" name="q" value="{{ $term }}">
-        @endif
-        <label for="sort" class="visually-hidden">Sort by</label>
-        <select id="sort" name="sort" class="form-select form-select-sm" data-autosubmit>
-            @foreach ($sorts as $value => $label)
-                <option value="{{ $value }}" @selected($sort === $value)>{{ $label }}</option>
-            @endforeach
-        </select>
-        <label for="per_page" class="visually-hidden">Pages per screen</label>
-        <select id="per_page" name="per_page" class="form-select form-select-sm" data-autosubmit>
-            @foreach ($perPageOptions as $option)
-                <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }} / page</option>
-            @endforeach
-        </select>
-        <noscript><button type="submit" class="btn btn-sm btn-outline-secondary">Apply</button></noscript>
-    </form>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('pages.create') }}" class="btn btn-sm btn-primary text-nowrap">New page</a>
+        <form method="GET" action="{{ route('home') }}" class="d-flex gap-2">
+            @if ($term !== '')
+                <input type="hidden" name="q" value="{{ $term }}">
+            @endif
+            <label for="sort" class="visually-hidden">Sort by</label>
+            <select id="sort" name="sort" class="form-select form-select-sm" data-autosubmit>
+                @foreach ($sorts as $value => $label)
+                    <option value="{{ $value }}" @selected($sort === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+            <label for="per_page" class="visually-hidden">Pages per screen</label>
+            <select id="per_page" name="per_page" class="form-select form-select-sm" data-autosubmit>
+                @foreach ($perPageOptions as $option)
+                    <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }} / page</option>
+                @endforeach
+            </select>
+            <noscript><button type="submit" class="btn btn-sm btn-outline-secondary">Apply</button></noscript>
+        </form>
+    </div>
 </div>
 @if ($pages->isEmpty())
     <p class="text-body-secondary">
         @if ($term !== '')
             No pages match “{{ $term }}”.
         @else
-            No pages yet. Pages posted through the API will appear here.
+            No pages yet. Use <strong>New page</strong> above, or post one through the API.
         @endif
     </p>
 @else

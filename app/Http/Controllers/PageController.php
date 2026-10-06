@@ -34,6 +34,18 @@ class PageController extends Controller
         ]);
     }
 
+    public function create(): View
+    {
+        return view('pages.create');
+    }
+
+    public function store(PageRequest $request): RedirectResponse
+    {
+        $page = $request->user()->pages()->create($request->validated());
+
+        return redirect()->route('pages.show', $page)->with('status', 'Page created.');
+    }
+
     public function show(Page $page): View
     {
         Gate::authorize('view', $page);

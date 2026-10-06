@@ -19,7 +19,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
     Route::get('/', [PageController::class, 'index'])->name('home');
-    Route::resource('pages', PageController::class)->only(['show', 'edit', 'update', 'destroy']);
+    Route::resource('pages', PageController::class)->only(['create', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::post('/media', [MediaController::class, 'store'])->middleware('throttle:media')->name('media.store');
     Route::get('/media/{media}/{name}', [MediaController::class, 'show'])->name('media.show');
