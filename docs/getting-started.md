@@ -77,6 +77,11 @@ touches your dev data. Tests live in `tests/Feature/`:
 | `PagePolicyTest.php` | Owner-only access |
 | `WebPagesTest.php` | Feed, page view, edit, delete |
 | `Api/PagesApiTest.php` | The REST API |
+| `MediaModelTest.php` | Media model, blocklist, markdown helper, policy |
+| `MediaUploadTest.php` | Session uploads from the editor |
+| `Api/MediaApiTest.php` | Token uploads, validation, size and type limits |
+| `MediaServeTest.php` | Owner-only serving, inline vs download, range requests, headers |
+| `MediaLinksTest.php` | Uploaded-file links open in a new tab |
 | `TokensTest.php` | Creating and revoking API tokens |
 | `Admin/UsersTest.php` | The admin Users screen |
 

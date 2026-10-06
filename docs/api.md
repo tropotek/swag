@@ -4,7 +4,7 @@ The API lets AI assistants and scripts manage the pages of the user who owns the
 
 - **Base URL:** `https://your-site.example/api`
 - **Format:** JSON in and out. Errors are always JSON, even without an `Accept` header.
-- **Rate limit:** 60 requests per minute per user.
+- **Rate limit:** 60 requests per minute per user, or 120 for `POST /media`.
 
 The same API is described machine-readably at `GET /api/openapi.json` (OpenAPI 3.1, no token needed), so
 an AI assistant can discover the operations and parameters itself.
@@ -44,7 +44,9 @@ which well-behaved clients follow with the same method and body.
 
 **How Markdown renders:** raw HTML in the body is displayed as literal text. Links using
 `javascript:`, `data:`, `vbscript:` or `file:` are removed. Nesting deeper than 50 levels is
-flattened. There's no image upload, so images need a public URL.
+flattened. Images and files come from [Upload a file](#upload-a-file): paste the returned `markdown`
+into the body. Images show in the page; other files are links that open in a new tab, where audio and
+video play and everything else downloads.
 
 ## Endpoints
 
@@ -114,13 +116,49 @@ curl -sS -X PATCH "$SWAG_URL/api/pages/12" \
 
 `DELETE /api/pages/{id}` returns **204** with no body.
 
+### Upload a file
+
+`POST /api/media` returns **201** with `{ "data": <media> }`. Send the file as `multipart/form-data` in the
+`file` field. The maximum size is 25 MB.
+
+```bash
+curl -sS -X POST "$SWAG_URL/api/media" \
+  -H "Authorization: Bearer $SWAG_TOKEN" -H "Accept: application/json" \
+  -F "file=@photo.png"
+```
+
+```json
+{
+  "data": {
+    "id": 7,
+    "url": "https://your-site.example/media/6f1c…/photo.png",
+    "name": "photo.png",
+    "mime_type": "image/png",
+    "size": 48213,
+    "markdown": "![photo.png](https://your-site.example/media/6f1c…/photo.png)"
+  }
+}
+```
+
+Paste `data.markdown` into a page body. Images display in the page. Every other file is a link that opens
+in a new tab: audio and video play there in the browser's own player, and everything else, PDFs included,
+downloads.
+
+Uploaded files are private: only you can open them, and only while logged in to the site. Executable and
+script types (`exe`, `bat`, `cmd`, `sh`, `js`, `php`, `py` and similar) are rejected with a `422`; put
+them in a zip file and upload that.
+
+The type is detected from the file's content, not its name, so renaming a file doesn't change how it's
+served. Uploads have their own rate limit of **120 requests per minute**, separate from the 60 per minute
+that the rest of the API shares.
+
 ## Errors
 
 | Status | When | Body |
 |---|---|---|
 | `401` | Token missing, wrong or revoked | `{"message": "Unauthenticated."}` |
 | `404` | Page doesn't exist **or belongs to someone else** | `{"message": "..."}` |
-| `422` | Validation failed | `{"message": "...", "errors": {"title": ["..."]}}` |
+| `422` | Validation failed, or an upload was too large or a blocked type | `{"message": "...", "errors": {"title": ["..."]}}` |
 | `429` | Rate limit exceeded | `{"message": "Too Many Attempts."}` with a `Retry-After` header |
 
 Other users' pages return `404`, not `403`, so page IDs can't be probed.

@@ -29,6 +29,15 @@ curl -sS -G "$SWAG_URL/api/pages" --data-urlencode "q=tap repair" \
 
 After creating a page, tell the user its `url`. Make each page stand alone: the reader won't have this chat.
 
+To put an image or file in a page, upload it first, then paste the returned `markdown` into the page body (there are no token-less URLs; files are private to the user):
+
+```bash
+curl -sS -X POST "$SWAG_URL/api/media" -H "Authorization: Bearer $SWAG_TOKEN" -H "Accept: application/json" \
+  -F "file=@photo.png" | jq -r '.data.markdown'
+```
+
+Max 25 MB. Executables and scripts are rejected: zip them first.
+
 ## Cautions
 
 - Confirm before any `DELETE`, or a `PATCH` that replaces the body.

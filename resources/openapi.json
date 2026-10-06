@@ -3,7 +3,7 @@
   "info": {
     "title": "Swag API",
     "version": "1.0.0",
-    "description": "Manage the Markdown pages of the user who owns the Bearer token. Send `Accept: application/json`. Rate limit: 60 requests per minute. Build request JSON with a real encoder (jq, json.dumps, JSON.stringify); Markdown contains quotes and newlines that break hand-written JSON."
+    "description": "Manage the Markdown pages of the user who owns the Bearer token. Send `Accept: application/json`. Rate limit: 60 requests per minute, or 120 per minute for `POST /media`. Build request JSON with a real encoder (jq, json.dumps, JSON.stringify); Markdown contains quotes and newlines that break hand-written JSON."
   },
   "servers": [
     {
@@ -334,6 +334,64 @@
           }
         }
       }
+    },
+    "/media": {
+      "post": {
+        "operationId": "uploadMedia",
+        "summary": "Upload a file to embed in a page",
+        "description": "Send the file as multipart/form-data in the `file` field (max 25 MB). Executables and scripts (for example exe, bat, sh, js, php, py) are rejected: put them in a zip and upload that. Paste `data.markdown` into a page body: images display in the page, and other files become links that open in a new tab, where audio and video play in the browser and everything else downloads. Uploaded files are private to your account and only visible to you when logged in to the site. This endpoint allows 120 requests per minute, separate from the 60 per minute for the rest of the API.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The stored file. Embed `data.markdown` in a page body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, wrong or revoked token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No file, file too large, or a blocked file type; `errors.file` says which.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -390,7 +448,7 @@
           "body_markdown": {
             "type": "string",
             "maxLength": 1000000,
-            "description": "GitHub-flavoured Markdown. Required on create. Raw HTML is shown as literal text; javascript: links are removed. Put `{.nowrap-col-1 .nowrap-col-2}` on the line above a table to stop columns wrapping. No image upload; images need a public URL."
+            "description": "GitHub-flavoured Markdown. Required on create. Raw HTML is shown as literal text; javascript: links are removed. Put `{.nowrap-col-1 .nowrap-col-2}` on the line above a table to stop columns wrapping. To add an image or file, upload it with `POST /media` and paste the returned `markdown` into the body."
           }
         }
       },
@@ -408,6 +466,42 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "Media": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string",
+            "description": "Link to the file. Only works for the owner when logged in."
+          },
+          "name": {
+            "type": "string",
+            "description": "Original file name."
+          },
+          "mime_type": {
+            "type": "string",
+            "description": "Detected from the file content, not its name."
+          },
+          "size": {
+            "type": "integer",
+            "description": "Bytes."
+          },
+          "markdown": {
+            "type": "string",
+            "description": "Ready to paste into a page body: image syntax for images, a link otherwise."
+          }
+        }
+      },
+      "MediaEnvelope": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Media"
           }
         }
       }
