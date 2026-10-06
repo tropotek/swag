@@ -49,9 +49,12 @@ document.addEventListener('click', async (event) => {
 });
 
 const mediaArea = document.querySelector('textarea[data-media-url]');
-if (mediaArea) {
-    const picker = document.querySelector(mediaArea.dataset.mediaPicker);
-    const status = document.querySelector(mediaArea.dataset.mediaStatus);
+const mediaPicker = mediaArea && document.querySelector(mediaArea.dataset.mediaPicker);
+const mediaStatus = mediaArea && document.querySelector(mediaArea.dataset.mediaStatus);
+// All three or none: a half-present set would throw here and kill every listener below it.
+if (mediaArea && mediaPicker && mediaStatus) {
+    const picker = mediaPicker;
+    const status = mediaStatus;
 
     const insertAtCursor = (text) => {
         const { selectionStart: start, selectionEnd: end, value } = mediaArea;
@@ -62,7 +65,16 @@ if (mediaArea) {
 
     const debug = mediaArea.dataset.debug === '1';
 
+    const maxKb = Number(mediaArea.dataset.maxKb) || 0;
+
     const upload = async (file) => {
+        // Refuse here rather than sending the whole file to be rejected: on a phone an
+        // oversized video would upload in full before the server could answer 422.
+        if (maxKb && file.size > maxKb * 1024) {
+            const mb = (size) => `${Math.round((size / 1048576) * 10) / 10} MB`;
+            throw new Error(`Too large (${mb(file.size)}). The limit is ${mb(maxKb * 1024)}.`);
+        }
+
         const body = new FormData();
         body.append('file', file);
         const response = await fetch(mediaArea.dataset.mediaUrl, {
@@ -88,18 +100,27 @@ if (mediaArea) {
     };
 
     const uploadAll = async (files) => {
-        for (const file of files) {
+        // Failures are collected rather than written straight to the status line: the next
+        // file's progress would overwrite the message, and a later success would clear it,
+        // so a rejected file could leave the batch looking like it all worked.
+        const failures = [];
+
+        for (const [index, file] of [...files].entries()) {
             status.classList.remove('text-danger');
-            status.textContent = `Uploading ${file.name}…`;
+            status.textContent =
+                files.length > 1
+                    ? `Uploading ${file.name} (${index + 1} of ${files.length})…`
+                    : `Uploading ${file.name}…`;
             try {
                 const media = await upload(file);
                 insertAtCursor(`${media.markdown}\n`);
-                status.textContent = '';
             } catch (error) {
-                status.classList.add('text-danger');
-                status.textContent = `${file.name}: ${error.message}`;
+                failures.push(`${file.name}: ${error.message}`);
             }
         }
+
+        status.classList.toggle('text-danger', failures.length > 0);
+        status.textContent = failures.join(' · ');
     };
 
     picker.addEventListener('change', async () => {
