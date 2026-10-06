@@ -83,6 +83,15 @@ it('still shows the validation message for a rejected file type', function () {
         ->assertJsonPath('errors.file.0', "This file type isn't allowed. Put it in a zip file and upload that.");
 });
 
+/** The editor refuses an oversized file before uploading it, so it needs the server's limit. */
+it('passes the upload size limit to the editor', function () {
+    config(['swag.media.max_kb' => 25600]);
+    $user = User::factory()->create();
+    $page = Page::factory()->for($user)->create();
+
+    $this->actingAs($user)->get(route('pages.edit', $page))->assertSee('data-max-kb="25600"', false);
+});
+
 it('tells the editor whether to log detail to the console, following app.debug', function (bool $debug, string $expected) {
     config(['app.debug' => $debug]);
     $user = User::factory()->create();
