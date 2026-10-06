@@ -25,10 +25,6 @@
             <div class="collapse navbar-collapse" id="main-nav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Pages</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('tokens.index') }}">API tokens</a></li>
-                    @if (auth()->user()->is_admin)
-                        <li class="nav-item"><a class="nav-link" href="{{ route('admin.users.index') }}">Users</a></li>
-                    @endif
                 </ul>
                 <ul class="navbar-nav align-items-md-center">
                     <li class="nav-item me-md-2 mb-2 mb-md-0">
@@ -44,12 +40,23 @@
                     <li class="nav-item">
                         <button type="button" id="theme-toggle" class="nav-link btn btn-link" aria-label="Toggle light/dark theme">🌙</button>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('account.edit') }}">{{ auth()->user()->name }}</a></li>
-                    <li class="nav-item">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="nav-link">Log out</button>
-                        </form>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="account-menu" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">{{ auth()->user()->name }}</a>
+                        <ul class="dropdown-menu dropdown-menu-md-end" aria-labelledby="account-menu">
+                            <li><a class="dropdown-item" href="{{ route('account.edit') }}">Account</a></li>
+                            @if (auth()->user()->is_admin)
+                                <li><a class="dropdown-item" href="{{ route('admin.users.index') }}">Users</a></li>
+                            @endif
+                            <li><a class="dropdown-item" href="{{ route('tokens.index') }}">API tokens</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Log out</button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>

@@ -198,3 +198,60 @@ it('wires the edit page for media upload', function () {
         ->assertSee('id="media-file"', false)
         ->assertSee('id="media-status"', false);
 });
+
+it('shows a New page button on the index', function () {
+    $this->actingAs(User::factory()->create())->get('/')
+        ->assertOk()
+        ->assertSee('href="'.route('pages.create').'"', false)
+        ->assertSee('New page');
+});
+
+it('creates a page from the new page form', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('pages.create'))->assertOk()->assertSee('New page');
+
+    $response = $this->actingAs($user)->post(route('pages.store'), ['title' => 'Fresh page', 'body_markdown' => 'Fresh body']);
+
+    $page = $user->pages()->sole();
+    $response->assertRedirect(route('pages.show', $page));
+    expect($page->only('title', 'body_markdown'))->toBe(['title' => 'Fresh page', 'body_markdown' => 'Fresh body']);
+});
+
+it('requires a title and body when creating', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->post(route('pages.store'), ['title' => '', 'body_markdown' => ''])
+        ->assertSessionHasErrors(['title', 'body_markdown']);
+
+    expect($user->pages()->count())->toBe(0);
+});
+
+it('wires the new page form for media upload', function () {
+    $this->actingAs(User::factory()->create())->get(route('pages.create'))
+        ->assertOk()
+        ->assertSee('data-media-url="'.route('media.store').'"', false)
+        ->assertSee('id="media-file"', false)
+        ->assertSee('id="media-status"', false);
+});
+
+it('puts the account menu, api tokens and logout in a dropdown under the username', function () {
+    $user = User::factory()->create(['name' => 'Dot Example']);
+
+    $this->actingAs($user)->get('/')
+        ->assertOk()
+        ->assertSee('data-bs-toggle="dropdown"', false)
+        ->assertSeeInOrder([
+            'Dot Example',
+            route('account.edit'),
+            route('tokens.index'),
+            route('logout'),
+        ], false);
+});
+
+it('shows Users in the account dropdown only for admins', function () {
+    $this->actingAs(User::factory()->create(['is_admin' => true]))->get('/')
+        ->assertSeeInOrder([route('account.edit'), route('admin.users.index'), route('tokens.index')], false);
+
+    $this->actingAs(User::factory()->create())->get('/')->assertDontSee(route('admin.users.index'), false);
+});

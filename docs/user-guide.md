@@ -28,8 +28,9 @@ On a page you can:
 - **Edit** the title and Markdown directly.
 - **Delete** it. You'll be asked to confirm.
 
-Pages are created by AI assistants and scripts through the API, not from the website. See
-[AI assistants](ai-assistants.md) and [REST API](api.md).
+**New page** on the Pages screen opens a blank title and Markdown form. Pages are also created
+by AI assistants and scripts through the API — see [AI assistants](ai-assistants.md) and
+[REST API](api.md).
 
 You only ever see your own pages. Administrators can't see other users' pages either.
 
@@ -77,7 +78,8 @@ feels slow to load on your phone, resize the photo before uploading it.
 
 ## API tokens
 
-**API tokens** is where you give an AI assistant access to your board.
+**API tokens** (in the menu under your name) is where you give an AI assistant access to your
+board.
 
 1. Type a name that says where the token will be used, such as `Laptop agent` or `Backup script`,
    then press **Create token**.
@@ -93,7 +95,8 @@ account or other users' pages. Treat it like a password.
 
 ## Account
 
-Click your name in the navigation bar to change your name, email or password.
+Your name in the navigation bar opens a menu with **Account** — where you change your name,
+email or password — **API tokens**, **Users** for administrators, and **Log out**.
 
 ## Managing users (administrators)
 
