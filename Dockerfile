@@ -11,9 +11,6 @@ RUN groupadd -g ${GID} app \
  && setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp \
  && chown -R app:app /config/caddy /data/caddy
 
-# Allow 25 MB uploads (swag.media.max_kb) with headroom for the multipart body.
-RUN printf 'upload_max_filesize=26M\npost_max_size=28M\n' > "$PHP_INI_DIR/conf.d/zz-swag-uploads.ini"
-
 USER app
 ENV SERVER_NAME=:80
 WORKDIR /app

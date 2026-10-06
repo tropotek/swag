@@ -39,6 +39,11 @@ Open <http://localhost:8080> and log in with the admin account you just created.
 The project directory is bind-mounted at `/app`, so code changes are live without a rebuild.
 The SQLite database lives at `database/database.sqlite` and survives container rebuilds.
 
+`docker/php.ini` is mounted at `$PHP_INI_DIR/conf.d/zz-swag.ini` and holds the PHP settings the
+app needs, chiefly `upload_max_filesize` and `post_max_size` for file uploads. Edit it and
+restart the container — no rebuild. Keep both above `swag.media.max_kb` (25 MB): when PHP rejects
+the body, Laravel never sees the file and the uploader reports "No file received".
+
 ### Settings
 
 These are read by Compose from the shell environment or `.env`:
