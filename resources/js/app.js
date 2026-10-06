@@ -47,3 +47,84 @@ document.addEventListener('click', async (event) => {
         button.textContent = 'Selected: copy manually';
     }
 });
+
+const mediaArea = document.querySelector('textarea[data-media-url]');
+if (mediaArea) {
+    const picker = document.querySelector(mediaArea.dataset.mediaPicker);
+    const status = document.querySelector(mediaArea.dataset.mediaStatus);
+
+    const insertAtCursor = (text) => {
+        const { selectionStart: start, selectionEnd: end, value } = mediaArea;
+        mediaArea.value = value.slice(0, start) + text + value.slice(end);
+        mediaArea.selectionStart = mediaArea.selectionEnd = start + text.length;
+        mediaArea.focus();
+    };
+
+    const debug = mediaArea.dataset.debug === '1';
+
+    const upload = async (file) => {
+        const body = new FormData();
+        body.append('file', file);
+        const response = await fetch(mediaArea.dataset.mediaUrl, {
+            method: 'POST',
+            headers: { Accept: 'application/json', 'X-CSRF-TOKEN': mediaArea.dataset.csrf },
+            body,
+        });
+        const json = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            // Only `errors.file` is written for a person to read. `message` can be the raw
+            // framework error when APP_DEBUG is on, so it goes to the console, never the page.
+            if (debug) {
+                console.error('[swag] upload failed', response.status, json);
+            }
+            throw new Error(
+                json.errors?.file?.[0] ??
+                    (response.status === 422
+                        ? 'That file was rejected.'
+                        : 'Upload failed. Please try again.'),
+            );
+        }
+        return json.data;
+    };
+
+    const uploadAll = async (files) => {
+        for (const file of files) {
+            status.classList.remove('text-danger');
+            status.textContent = `Uploading ${file.name}…`;
+            try {
+                const media = await upload(file);
+                insertAtCursor(`${media.markdown}\n`);
+                status.textContent = '';
+            } catch (error) {
+                status.classList.add('text-danger');
+                status.textContent = `${file.name}: ${error.message}`;
+            }
+        }
+    };
+
+    picker.addEventListener('change', async () => {
+        await uploadAll([...picker.files]);
+        picker.value = '';
+    });
+
+    mediaArea.addEventListener('dragover', (event) => {
+        if (event.dataTransfer?.types.includes('Files')) {
+            event.preventDefault();
+        }
+    });
+
+    mediaArea.addEventListener('drop', (event) => {
+        if (event.dataTransfer?.files.length) {
+            event.preventDefault();
+            uploadAll([...event.dataTransfer.files]);
+        }
+    });
+
+    mediaArea.addEventListener('paste', (event) => {
+        const files = [...(event.clipboardData?.files ?? [])];
+        if (files.length) {
+            event.preventDefault();
+            uploadAll(files);
+        }
+    });
+}

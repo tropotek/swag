@@ -33,6 +33,48 @@ Pages are created by AI assistants and scripts through the API, not from the web
 
 You only ever see your own pages. Administrators can't see other users' pages either.
 
+## Images and files
+
+While editing a page, **Attach file** uploads a file, or you can drag one onto the Markdown box
+or paste one straight from the clipboard. The Markdown is inserted where your cursor is.
+
+Images appear in the page. Audio and video play in a new tab. Everything else, PDFs included,
+becomes a link that downloads. Uploads are at most 25 MB, and programs and scripts (`.exe`,
+`.bat`, `.sh`, `.js`, `.php` and similar) are refused — put one in a zip file and upload that.
+
+Your files are private. A link to one only works while you're logged in, so sending it to
+someone else shows them a login screen, not your file.
+
+### Laying an image out
+
+Images already shrink to fit the screen, so they never overflow on a phone. To do more, put a
+class in braces. On the line **after** an image it styles the whole line; directly **after the
+link** it styles the image itself.
+
+```markdown
+![The ute](/media/abc/ute.jpg)
+{.text-center}
+
+![The ute](/media/abc/ute.jpg){.half}
+
+![The ute](/media/abc/ute.jpg){.rounded .border}
+```
+
+| Class | What it does |
+|---|---|
+| `{.text-center}` | Centres the image on its own line. Put it on the line after. |
+| `{.half}` | Half width on a tablet or desktop, full width on a phone. |
+| `{.rounded}`, `{.border}`, `{.shadow}` | Rounded corners, a border, a drop shadow. |
+
+Use `{.half}` rather than Bootstrap's `{.w-50}`: `w-50` is half width at *every* screen size, so
+it shrinks to a thumbnail on a phone.
+
+Only `class` works. `style="..."` is stripped, and raw HTML such as `<center>` or `<img>` shows
+as literal text.
+
+Photos straight from a camera are several megabytes, and Swag stores what you give it. If a page
+feels slow to load on your phone, resize the photo before uploading it.
+
 ## API tokens
 
 **API tokens** is where you give an AI assistant access to your board.

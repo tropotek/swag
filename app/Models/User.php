@@ -39,6 +39,11 @@ class User extends Authenticatable
         return $this->hasMany(Page::class);
     }
 
+    public function media(): HasMany
+    {
+        return $this->hasMany(Media::class);
+    }
+
     protected function email(): Attribute
     {
         return Attribute::make(set: fn (string $value) => mb_strtolower(trim($value)));

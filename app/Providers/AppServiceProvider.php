@@ -20,5 +20,6 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(60)->by($request->user()?->id ?: $request->ip()));
+        RateLimiter::for('media', fn (Request $request) => Limit::perMinute(120)->by($request->user()?->id ?: $request->ip()));
     }
 }

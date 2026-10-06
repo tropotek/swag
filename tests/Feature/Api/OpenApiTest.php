@@ -38,3 +38,17 @@ it('documents the list parameters the controller accepts', function () {
         ->and($params['per_page']['schema']['default'])->toBe(Page::DEFAULT_PER_PAGE)
         ->and($params['sort']['schema']['enum'])->toBe([...array_keys(Page::SORTS), Page::RELEVANCE]);
 });
+
+it('documents the media upload and its limits', function () {
+    $spec = $this->getJson('/api/openapi.json')->json();
+    $post = $spec['paths']['/media']['post'];
+
+    expect($post['requestBody']['content'])->toHaveKey('multipart/form-data')
+        ->and($post['requestBody']['content']['multipart/form-data']['schema']['properties']['file']['format'])->toBe('binary')
+        ->and($post['responses'])->toHaveKeys(['201', '401', '422'])
+        ->and($post['description'])->toContain('25 MB')
+        ->and($post['description'])->toContain('zip')
+        ->and($post['description'])->toContain('120')
+        ->and($spec['components']['schemas'])->toHaveKeys(['Media', 'MediaEnvelope'])
+        ->and($spec['components']['schemas']['PageInput']['properties']['body_markdown']['description'])->not->toContain('No image upload');
+});

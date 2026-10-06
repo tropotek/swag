@@ -187,3 +187,14 @@ it('escapes the search term', function () {
     $this->actingAs(User::factory()->create())->get('/?q='.urlencode('"><script>alert(1)</script>'))
         ->assertDontSee('<script>alert(1)</script>', false);
 });
+
+it('wires the edit page for media upload', function () {
+    $user = User::factory()->create();
+    $page = Page::factory()->for($user)->create();
+
+    $this->actingAs($user)->get(route('pages.edit', $page))
+        ->assertOk()
+        ->assertSee('data-media-url="'.route('media.store').'"', false)
+        ->assertSee('id="media-file"', false)
+        ->assertSee('id="media-status"', false);
+});

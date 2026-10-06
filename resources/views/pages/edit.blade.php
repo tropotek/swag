@@ -12,7 +12,16 @@
     </div>
     <div class="mb-3">
         <label for="body_markdown" class="form-label">Markdown</label>
-        <textarea id="body_markdown" name="body_markdown" rows="20" class="form-control font-monospace @error('body_markdown') is-invalid @enderror" required>{{ old('body_markdown', $page->body_markdown) }}</textarea>
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <label for="media-file" class="btn btn-sm btn-outline-secondary mb-0">Attach file</label>
+            <input id="media-file" type="file" multiple class="d-none">
+            <span id="media-status" class="small text-body-secondary" role="status"></span>
+        </div>
+        <textarea id="body_markdown" name="body_markdown" rows="20" class="form-control font-monospace @error('body_markdown') is-invalid @enderror" required
+                  data-media-url="{{ route('media.store') }}" data-csrf="{{ csrf_token() }}"
+                  data-media-picker="#media-file" data-media-status="#media-status"
+                  data-debug="{{ config('app.debug') ? '1' : '0' }}">{{ old('body_markdown', $page->body_markdown) }}</textarea>
+        <div class="form-text">Drop or paste files into the box to upload them. Images show in the page; audio and video play in a new tab; other files download.</div>
         @error('body_markdown')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="d-flex gap-2">
