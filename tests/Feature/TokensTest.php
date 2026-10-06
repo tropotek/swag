@@ -73,3 +73,10 @@ it('returns 404 for a non-numeric token id', function () {
 it('shows the Tokens link in the nav', function () {
     $this->actingAs(User::factory()->create())->get('/')->assertSee(route('tokens.index'), false);
 });
+
+it('shows the OpenAPI link and the skill for copying', function () {
+    $this->actingAs(User::factory()->create())->get(route('tokens.index'))
+        ->assertOk()
+        ->assertSee(url('/api/openapi.json'))
+        ->assertSee('name: swag', false);
+});

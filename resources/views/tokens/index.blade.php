@@ -54,9 +54,18 @@
 <h2 class="h5 mt-4">Using a token</h2>
 <p>Give your AI client the token and the API base <code>{{ url('/api') }}</code>. Endpoints:
     <code>GET/POST /pages</code>, <code>GET/PATCH/DELETE /pages/{id}</code>.</p>
+<p>The API describes itself with an OpenAPI document listing every operation, parameter, limit and error shape.
+    Point your AI client at <a href="{{ url('/api/openapi.json') }}"><code>{{ url('/api/openapi.json') }}</code></a>
+    (no token needed) and it can work out how to use the API.</p>
 <pre class="bg-body p-3 border rounded small"><code>curl -X POST {{ url('/api/pages') }} \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{"title": "Hello", "body_markdown": "# Hello\n\nPosted by my AI."}'</code></pre>
+
+<h2 class="h5 mt-4">Claude Code skill</h2>
+<p>Copy this into <code>~/.claude/skills/swag/SKILL.md</code> to let Claude Code add to and search your swag.
+    It needs the <code>SWAG_URL</code> and <code>SWAG_TOKEN</code> environment variables set.</p>
+<div class="mb-2"><button type="button" class="btn btn-outline-secondary btn-sm" data-copy-target="#skill-text">Copy</button></div>
+<textarea id="skill-text" class="form-control font-monospace small" rows="16" readonly>{{ $skill }}</textarea>
 @endsection

@@ -5,74 +5,32 @@ description: Use when the user says "add this to the swag", "chuck it in the swa
 
 # Swag
 
-Swag is the user's private site of Markdown pages, the things they carry with them. "Add this to the swag" means post it as a page. You post pages through its REST API, and the user reads them later in a browser.
+Swag is the user's private site of Markdown pages. "Add this to the swag" means post it as a page via the REST API; the user reads it later in a browser.
 
 ## Configuration
 
-Two environment variables:
-
-| Variable | Example |
-|---|---|
-| `SWAG_URL` | `https://notes.example.com` (no trailing slash) |
-| `SWAG_TOKEN` | the user's API token, from the site's **API tokens** page |
-
-Check both with `[ -n "$SWAG_URL" ] && [ -n "$SWAG_TOKEN" ] && echo set`. If either is missing, stop and ask the user to set it. If the token is set in a shell profile, it must be single-quoted, because tokens contain `|`. Never print the token, write it into files, or put it literally in a command. Always reference `$SWAG_TOKEN`.
+Needs env vars `SWAG_URL` (no trailing slash) and `SWAG_TOKEN` (from the site's **API tokens** page). Check with `[ -n "$SWAG_URL" ] && [ -n "$SWAG_TOKEN" ] && echo set`; if either is missing, stop and ask the user. Never print the token, write it to files, or type it literally: always use `$SWAG_TOKEN`. Use `SWAG_URL` exactly as configured.
 
 ## API
 
-The API describes itself. Read the OpenAPI document first (no token needed) for the operations, parameters, limits and error shapes, and don't rely on memory:
+The API describes itself, including content rules, limits, rate limit and errors. Read the OpenAPI document (no token needed) before calling it, not from memory:
 
 ```bash
-curl -sS "$SWAG_URL/api/openapi.json" | jq '.paths | map_values(map_values(.summary?))'   # overview
-curl -sS "$SWAG_URL/api/openapi.json" | jq '.paths["/pages"].get'                         # full detail for one operation
+curl -sS "$SWAG_URL/api/openapi.json" | jq '.paths | map_values(map_values(.summary?))'
+curl -sS "$SWAG_URL/api/openapi.json" | jq '.paths["/pages"].post'   # one operation in full
 ```
 
-All other requests send `Authorization: Bearer $SWAG_TOKEN` and `Accept: application/json`. Search pages with `q` instead of paging through the whole list, for example:
+Send `Authorization: Bearer $SWAG_TOKEN` and `Accept: application/json`. Search with `q` rather than paging through the list:
 
 ```bash
 curl -sS -G "$SWAG_URL/api/pages" --data-urlencode "q=tap repair" \
-  -H "Authorization: Bearer $SWAG_TOKEN" -H "Accept: application/json" |
-  jq '.data[] | {id, title, url}'
+  -H "Authorization: Bearer $SWAG_TOKEN" -H "Accept: application/json" | jq '.data[] | {id, title, url}'
 ```
 
-If the document can't be fetched, tell the user. The operations are create (`POST /api/pages`), list or search (`GET /api/pages`), read, update (`PATCH`) and delete under `/api/pages/{id}`.
+After creating a page, tell the user its `url`. Make each page stand alone: the reader won't have this chat.
 
-## Posting a page
+## Cautions
 
-Markdown contains quotes and newlines that break hand-written JSON. Write the body to a temp file and let `jq` encode it:
-
-```bash
-body=$(mktemp)
-cat > "$body" <<'MD'
-# Heading
-
-Markdown content here. Tables, lists and fenced code all render.
-MD
-jq -n --arg title "Short descriptive title" --rawfile body "$body" \
-  '{title: $title, body_markdown: $body}' |
-curl -sS -X POST "$SWAG_URL/api/pages" \
-  -H "Authorization: Bearer $SWAG_TOKEN" \
-  -H "Accept: application/json" -H "Content-Type: application/json" \
-  --data-binary @- | jq '{id: .data.id, url: .data.url, errors: .errors}'
-rm -f "$body"
-```
-
-Tell the user the returned `url`.
-
-## Content rules
-
-- Title: at most 255 characters. Body: at most 1,000,000 characters.
-- Write Markdown (GitHub-flavoured). Raw HTML is shown as literal text, and `javascript:` links are removed.
-- To stop a table's first or second column wrapping (dates, odometer readings), put `{.nowrap-col-1 .nowrap-col-2}` on the line directly above the table. Use either class or both. No other attributes are allowed.
-- There's no image upload. Images only appear if they're referenced by a public URL.
-- Write the page so it stands alone: someone reading it later on a phone won't have this chat.
-
-## Errors
-
-`401` means the token is missing, wrong or revoked: ask the user for a new one. `429` means rate limited: wait, then retry. Other error shapes are in the OpenAPI document.
-
-## Common mistakes
-
-- Deleting or overwriting a page without the user explicitly asking. Always confirm before `DELETE` or a `PATCH` that replaces the body.
-- Posting a duplicate. When updating "the page about X", search for it with `q` first and `PATCH` the existing one.
-- Using `http://` for a site that forces HTTPS. Use the URL exactly as the user configured it.
+- Confirm before any `DELETE`, or a `PATCH` that replaces the body.
+- To update "the page about X", search with `q` and `PATCH` the existing page rather than posting a duplicate.
+- On `401`, ask the user for a new token.

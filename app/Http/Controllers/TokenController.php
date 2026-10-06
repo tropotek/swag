@@ -13,6 +13,7 @@ class TokenController extends Controller
         return view('tokens.index', [
             'tokens' => $request->user()->tokens()->latest()->get(),
             'plainTextToken' => session('plainTextToken'),
+            'skill' => file_get_contents(base_path('skills/swag/SKILL.md')),
         ]);
     }
 
