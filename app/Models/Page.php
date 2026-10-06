@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Markdown\MediaLinkExtension;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -120,6 +121,7 @@ class Page extends Model
 
     public function renderedBody(): string
     {
-        return Str::markdown($this->body_markdown, self::MARKDOWN_OPTIONS, [new AttributesExtension()]);
+        // MediaLinkExtension must stay last: see the class comment on why the order matters.
+        return Str::markdown($this->body_markdown, self::MARKDOWN_OPTIONS, [new AttributesExtension(), new MediaLinkExtension()]);
     }
 }
