@@ -65,7 +65,24 @@ docker compose run --rm app php artisan test           # run the test suite
 docker compose run --rm node npm run build             # rebuild CSS/JS after frontend edits
 docker compose run --rm app php artisan migrate        # apply new migrations
 docker compose exec app php artisan route:list         # list routes
+docker compose run --rm app php artisan swag:prune-media    # report unreferenced uploads
 ```
+
+### Pruning unused uploads
+
+Attaching a file uploads it immediately, so abandoning an edit — or deleting the line from the
+Markdown — leaves the file behind with nothing pointing at it.
+
+```bash
+php artisan swag:prune-media                # report only; deletes nothing
+php artisan swag:prune-media --force        # delete them
+php artisan swag:prune-media --force --hours=1
+```
+
+It finds two things: media rows whose id appears in no page, and files on the disk with no row
+at all. Anything uploaded in the last 24 hours is left alone, because a file is uploaded before
+the page carrying its link is saved — `--hours` changes that window. Run it without `--force`
+first and read the list; a file deleted here is gone.
 
 ## Tests
 
