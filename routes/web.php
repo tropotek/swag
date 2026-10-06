@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserPasswordController as AdminUserPasswordController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\TokenController;
@@ -19,6 +20,9 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
 
     Route::get('/', [PageController::class, 'index'])->name('home');
     Route::resource('pages', PageController::class)->only(['show', 'edit', 'update', 'destroy']);
+
+    Route::post('/media', [MediaController::class, 'store'])->middleware('throttle:media')->name('media.store');
+    Route::get('/media/{media}/{name}', [MediaController::class, 'show'])->name('media.show');
 
     Route::get('/tokens', [TokenController::class, 'index'])->name('tokens.index');
     Route::post('/tokens', [TokenController::class, 'store'])->name('tokens.store');
