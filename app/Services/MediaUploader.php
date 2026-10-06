@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
+use Throwable;
 
 class MediaUploader
 {
@@ -19,19 +20,28 @@ class MediaUploader
         $mime = $file->getMimeType() ?: 'application/octet-stream';
         $size = (int) $file->getSize();
 
+        $disk = Storage::disk(Media::DISK);
+
         // The disk is configured with throw => false, so a failed write returns false and logs
         // nothing. Without this check an unwritable storage directory would return 201 with a
         // markdown link to bytes that were never stored.
-        if (Storage::disk(Media::DISK)->putFileAs('media', $file, $uuid) === false) {
+        if ($disk->putFileAs('media', $file, $uuid) === false) {
             throw new RuntimeException('Could not write the uploaded file to the '.Media::DISK.' disk.');
         }
 
-        return $user->media()->create([
-            'uuid' => $uuid,
-            'original_name' => $this->displayName($file->getClientOriginalName()),
-            'mime_type' => $mime,
-            'size' => $size,
-        ]);
+        try {
+            return $user->media()->create([
+                'uuid' => $uuid,
+                'original_name' => $this->displayName($file->getClientOriginalName()),
+                'mime_type' => $mime,
+                'size' => $size,
+            ]);
+        } catch (Throwable $e) {
+            // The bytes are already on disk and nothing will ever reference them now.
+            $disk->delete('media/'.$uuid);
+
+            throw $e;
+        }
     }
 
     private function displayName(string $name): string

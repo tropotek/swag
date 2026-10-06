@@ -60,6 +60,8 @@ if (mediaArea) {
         mediaArea.focus();
     };
 
+    const debug = mediaArea.dataset.debug === '1';
+
     const upload = async (file) => {
         const body = new FormData();
         body.append('file', file);
@@ -70,7 +72,17 @@ if (mediaArea) {
         });
         const json = await response.json().catch(() => ({}));
         if (!response.ok) {
-            throw new Error(json.errors?.file?.[0] ?? json.message ?? 'Upload failed.');
+            // Only `errors.file` is written for a person to read. `message` can be the raw
+            // framework error when APP_DEBUG is on, so it goes to the console, never the page.
+            if (debug) {
+                console.error('[swag] upload failed', response.status, json);
+            }
+            throw new Error(
+                json.errors?.file?.[0] ??
+                    (response.status === 422
+                        ? 'That file was rejected.'
+                        : 'Upload failed. Please try again.'),
+            );
         }
         return json.data;
     };

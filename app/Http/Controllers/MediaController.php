@@ -2,23 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\MediaRequest;
-use App\Http\Resources\MediaResource;
+use App\Http\Controllers\Concerns\StoresMedia;
 use App\Models\Media;
-use App\Services\MediaUploader;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 class MediaController extends Controller
 {
-    public function store(MediaRequest $request, MediaUploader $uploader): JsonResponse
-    {
-        $media = $uploader->store($request->user(), $request->file('file'));
-
-        return MediaResource::make($media)->response()->setStatusCode(201);
-    }
+    use StoresMedia;
 
     public function show(Media $media, string $name): Response
     {
