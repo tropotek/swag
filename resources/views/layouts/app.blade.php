@@ -74,5 +74,10 @@
     @endif
     @yield('content')
 </main>
+<footer class="container d-print-none border-top mt-4 py-3 text-body-secondary small d-flex justify-content-end gap-2">
+    <a href="https://github.com/tropotek/swag" target="_blank" rel="noopener" class="link-secondary text-decoration-none">GitHub</a>
+    <span aria-hidden="true">|</span>
+    <a href="https://tropotek.github.io/swag/" target="_blank" rel="noopener" class="link-secondary text-decoration-none">Docs</a>
+</footer>
 </body>
 </html>
