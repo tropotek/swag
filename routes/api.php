@@ -15,4 +15,5 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 // image would otherwise eat the budget shared with page writes.
 Route::middleware(['auth:sanctum', 'throttle:media'])->group(function () {
     Route::post('media', [MediaController::class, 'store'])->name('api.media.store');
+    Route::get('media/{media}/{name?}', [MediaController::class, 'show'])->name('api.media.show');
 });

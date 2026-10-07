@@ -169,3 +169,94 @@ it('returns a JSON 422 even without an Accept header', function () {
 
     $this->post('/api/media', [])->assertStatus(422)->assertJsonValidationErrors('file');
 });
+
+function apiMediaUrl(Media $media, bool $withName = true): string
+{
+    return '/api/media/'.$media->uuid.($withName ? '/'.$media->urlName() : '');
+}
+
+function storedApiMedia(User $user, string $name, string $mime): Media
+{
+    $media = Media::factory()->for($user)->create(['original_name' => $name, 'mime_type' => $mime]);
+    Storage::disk(Media::DISK)->put($media->path(), 'file-bytes');
+
+    return $media;
+}
+
+it('requires a token to download media', function () {
+    $media = storedApiMedia(User::factory()->create(), 'photo.png', 'image/png');
+
+    $this->getJson(apiMediaUrl($media))->assertUnauthorized();
+});
+
+it('serves the token user\'s media inline', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $media = storedApiMedia($user, 'Holiday Photo.png', 'image/png');
+
+    $response = $this->get(apiMediaUrl($media))->assertOk();
+
+    expect($response->headers->get('Content-Type'))->toStartWith('image/png')
+        ->and($response->headers->get('Content-Disposition'))->toStartWith('inline')
+        ->and($response->headers->get('X-Content-Type-Options'))->toBe('nosniff')
+        ->and($response->baseResponse->getFile()->getContent())->toBe('file-bytes');
+});
+
+it('serves media from the uuid alone, without the name segment', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $media = storedApiMedia($user, 'photo.png', 'image/png');
+
+    $this->get(apiMediaUrl($media, withName: false))->assertOk();
+});
+
+it('ignores a wrong name segment, since lookup is by uuid', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $media = storedApiMedia($user, 'photo.png', 'image/png');
+
+    $this->get('/api/media/'.$media->uuid.'/anything.png')->assertOk();
+});
+
+it('sends non-images as a sandboxed attachment', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $media = storedApiMedia($user, 'kit.zip', 'application/zip');
+
+    $response = $this->get(apiMediaUrl($media))->assertOk();
+
+    expect($response->headers->get('Content-Disposition'))->toStartWith('attachment')
+        ->and($response->headers->get('Content-Security-Policy'))->toBe('sandbox');
+});
+
+it('answers range requests so an agent can fetch part of a file', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $media = storedApiMedia($user, 'clip.mp4', 'video/mp4');
+
+    $partial = $this->get(apiMediaUrl($media), ['Range' => 'bytes=0-3']);
+
+    expect($partial->getStatusCode())->toBe(206)
+        ->and($partial->headers->get('Content-Range'))->toBe('bytes 0-3/10');
+});
+
+it('returns 404 for another user\'s media', function () {
+    $media = storedApiMedia(User::factory()->create(), 'photo.png', 'image/png');
+    Sanctum::actingAs(User::factory()->create());
+
+    $this->getJson(apiMediaUrl($media))->assertNotFound();
+});
+
+it('returns 404 for a uuid that does not exist', function () {
+    Sanctum::actingAs(User::factory()->create());
+
+    $this->getJson('/api/media/'.fake()->uuid().'/photo.png')->assertNotFound();
+});
+
+it('returns 404 when the row is there but the file is gone', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $media = Media::factory()->for($user)->create(['original_name' => 'photo.png', 'mime_type' => 'image/png']);
+
+    $this->getJson(apiMediaUrl($media))->assertNotFound();
+});

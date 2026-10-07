@@ -38,6 +38,14 @@ curl -sS -X POST "$SWAG_URL/api/media" -H "Authorization: Bearer $SWAG_TOKEN" -H
 
 Max 25 MB. Executables and scripts are rejected: zip them first.
 
+To read a file a page refers to — an image you need to look at, for instance — take the `/media/{uuid}/{name}` path out of the page's Markdown and prefix it with `/api`:
+
+```bash
+curl -sS "$SWAG_URL/api/media/6f1c…/photo.png" -H "Authorization: Bearer $SWAG_TOKEN" -o photo.png
+```
+
+The name segment is cosmetic, so `/api/media/{uuid}` works too.
+
 ## Cautions
 
 - Confirm before any `DELETE`, or a `PATCH` that replaces the body.

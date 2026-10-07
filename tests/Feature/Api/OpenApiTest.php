@@ -25,7 +25,7 @@ it('documents every API route and nothing else', function () {
         ->filter(fn ($route) => str_starts_with($route->uri(), 'api/') && $route->uri() !== 'api/openapi.json')
         ->flatMap(fn ($route) => collect($route->methods())
             ->reject(fn (string $method) => in_array($method, ['HEAD', 'PUT'], true))
-            ->map(fn (string $method) => $method.' /'.preg_replace('/\{\w+\}/', '{}', $route->uri())));
+            ->map(fn (string $method) => $method.' /'.preg_replace('/\{\w+\??\}/', '{}', $route->uri())));
 
     expect($documented->sort()->values()->all())->toBe($registered->sort()->values()->all());
 });
@@ -51,4 +51,13 @@ it('documents the media upload and its limits', function () {
         ->and($post['description'])->toContain('120')
         ->and($spec['components']['schemas'])->toHaveKeys(['Media', 'MediaEnvelope'])
         ->and($spec['components']['schemas']['PageInput']['properties']['body_markdown']['description'])->not->toContain('No image upload');
+});
+
+it('documents the media download and how to reach it from a page link', function () {
+    $get = $this->getJson('/api/openapi.json')->json('paths./media/{uuid}/{name}.get');
+
+    expect($get['responses'])->toHaveKeys(['200', '206', '401', '404'])
+        ->and(collect($get['parameters'])->pluck('name')->all())->toBe(['uuid', 'name'])
+        ->and($get['description'])->toContain('/api')
+        ->and($get['description'])->toContain('Range');
 });

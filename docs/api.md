@@ -4,7 +4,7 @@ The API lets AI assistants and scripts manage the pages of the user who owns the
 
 - **Base URL:** `https://your-site.example/api`
 - **Format:** JSON in and out. Errors are always JSON, even without an `Accept` header.
-- **Rate limit:** 60 requests per minute per user, or 120 for `POST /media`.
+- **Rate limit:** 60 requests per minute per user, or 120 for the `/media` endpoints.
 
 The same API is described machine-readably at `GET /api/openapi.json` (OpenAPI 3.1, no token needed), so
 an AI assistant can discover the operations and parameters itself.
@@ -144,13 +144,33 @@ Paste `data.markdown` into a page body. Images display in the page. Every other 
 in a new tab: audio and video play there in the browser's own player, and everything else, PDFs included,
 downloads.
 
-Uploaded files are private: only you can open them, and only while logged in to the site. Executable and
+Uploaded files are private: only you can open them, with your token or while logged in to the site.
+Executable and
 script types (`exe`, `bat`, `cmd`, `sh`, `js`, `php`, `py` and similar) are rejected with a `422`; put
 them in a zip file and upload that.
 
 The type is detected from the file's content, not its name, so renaming a file doesn't change how it's
-served. Uploads have their own rate limit of **120 requests per minute**, separate from the 60 per minute
-that the rest of the API shares.
+served.
+
+### Download a file
+
+`GET /api/media/{uuid}/{name}` returns **200** with the file's bytes and its stored content type.
+
+A page body links to its files as `/media/{uuid}/{name}`; prefix that path with `/api` to read it with
+your token. The name segment is cosmetic — lookup is by uuid — so `GET /api/media/{uuid}` works too.
+This is how an assistant reads an image a page refers to.
+
+```bash
+curl -sS "$SWAG_URL/api/media/6f1c…/photo.png" \
+  -H "Authorization: Bearer $SWAG_TOKEN" -o photo.png
+```
+
+Images, audio and video come back inline; every other type comes back as an attachment. `Range` requests
+are answered with a **206**, so you can fetch part of a large file. Someone else's file, an unknown uuid
+and a missing file all return **404**.
+
+The two `/media` endpoints share a rate limit of **120 requests per minute**, separate from the 60 per
+minute that the rest of the API shares.
 
 ## Errors
 

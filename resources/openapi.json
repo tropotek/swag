@@ -3,7 +3,7 @@
   "info": {
     "title": "Swag API",
     "version": "1.0.0",
-    "description": "Manage the Markdown pages of the user who owns the Bearer token. Send `Accept: application/json`. Rate limit: 60 requests per minute, or 120 per minute for `POST /media`. Build request JSON with a real encoder (jq, json.dumps, JSON.stringify); Markdown contains quotes and newlines that break hand-written JSON."
+    "description": "Manage the Markdown pages of the user who owns the Bearer token. Send `Accept: application/json`. Rate limit: 60 requests per minute, or 120 per minute for the `/media` endpoints. Build request JSON with a real encoder (jq, json.dumps, JSON.stringify); Markdown contains quotes and newlines that break hand-written JSON."
   },
   "servers": [
     {
@@ -382,6 +382,78 @@
           },
           "422": {
             "description": "No file, file too large, or a blocked file type; `errors.file` says which.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/media/{uuid}/{name}": {
+      "get": {
+        "operationId": "downloadMedia",
+        "summary": "Download a file that is embedded in a page",
+        "description": "Fetch the bytes of one of your uploads. A page body links to its files as `/media/{uuid}/{name}`; prefix that path with `/api` to read it with your token. `{name}` is cosmetic — lookup is by `{uuid}` — so you can leave it off. Images, audio and video come back inline with their own content type, which is how an assistant reads an image a page refers to; other types come back as an attachment. Range requests are answered, so you can fetch part of a large file. This endpoint shares the 120 requests per minute of `POST /media`.",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "description": "The file's uuid, the first path segment after `/media/` in a page's link.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "description": "Cosmetic file name. It is ignored, and the whole `/{name}` segment can be left off.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file's bytes, with its stored content type.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "The requested byte range, when the request carries a `Range` header.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, wrong or revoked token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such file, the file belongs to another user, or its bytes are missing.",
             "content": {
               "application/json": {
                 "schema": {
